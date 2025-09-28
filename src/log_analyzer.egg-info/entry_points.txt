@@ -1,0 +1,3 @@
+[console_scripts]
+analyzer = log_analyzer.main:main
+log-analyzer = log_analyzer.main:main

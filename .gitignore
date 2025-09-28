@@ -1,0 +1,61 @@
+# Log Analyzer
+
+*.log
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Ambiente virtual
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários
+*.tmp
+*.temp
+*~
+
+# Exports
+exports/*.csv
+exports/*.json
+exports/*.xlsx
+
+# Cache de análise geográfica
+geo_cache.json
+
+# Configurações locais
+config/local_config.json
+config/user_config.json
+
+# Logs da aplicação
+*.log
+logs/
+
+# Arquivos de teste
+test_*.csv
+test_*.json
+sample_*.csv
+sample_*.json
+
+# Backup files
+*.bak
+*.backup
+
+# Legacy files (manter para compatibilidade)
+# legacy/ - manter pasta legacy no versionamento

@@ -1,0 +1,182 @@
+[
+  {
+    "timestamp": "2024-09-28 14:30:15",
+    "source_ip": "192.168.1.200",
+    "destination_ip": "10.0.0.80",
+    "port": 80,
+    "protocol": "TCP",
+    "action": "ALLOW",
+    "bytes": 2048
+  },
+  {
+    "timestamp": "2024-09-28 14:31:22",
+    "source_ip": "45.76.123.89",
+    "destination_ip": "10.0.0.80",
+    "port": 22,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 512
+  },
+  {
+    "timestamp": "2024-09-28 14:31:28",
+    "source_ip": "45.76.123.89",
+    "destination_ip": "10.0.0.80",
+    "port": 22,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 512
+  },
+  {
+    "timestamp": "2024-09-28 14:31:34",
+    "source_ip": "45.76.123.89",
+    "destination_ip": "10.0.0.80",
+    "port": 22,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 512
+  },
+  {
+    "timestamp": "2024-09-28 14:31:40",
+    "source_ip": "45.76.123.89",
+    "destination_ip": "10.0.0.80",
+    "port": 22,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 512
+  },
+  {
+    "timestamp": "2024-09-28 14:31:46",
+    "source_ip": "45.76.123.89",
+    "destination_ip": "10.0.0.80",
+    "port": 22,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 512
+  },
+  {
+    "timestamp": "2024-09-28 14:31:52",
+    "source_ip": "45.76.123.89",
+    "destination_ip": "10.0.0.80",
+    "port": 22,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 512
+  },
+  {
+    "timestamp": "2024-09-28 14:32:10",
+    "source_ip": "192.168.1.201",
+    "destination_ip": "10.0.0.80",
+    "port": 443,
+    "protocol": "TCP",
+    "action": "ALLOW",
+    "bytes": 4096
+  },
+  {
+    "timestamp": "2024-09-28 15:00:10",
+    "source_ip": "157.245.103.94",
+    "destination_ip": "10.0.0.80",
+    "port": 22,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 64
+  },
+  {
+    "timestamp": "2024-09-28 15:00:15",
+    "source_ip": "157.245.103.94",
+    "destination_ip": "10.0.0.80",
+    "port": 80,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 64
+  },
+  {
+    "timestamp": "2024-09-28 15:00:20",
+    "source_ip": "157.245.103.94",
+    "destination_ip": "10.0.0.80",
+    "port": 443,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 64
+  },
+  {
+    "timestamp": "2024-09-28 15:00:25",
+    "source_ip": "157.245.103.94",
+    "destination_ip": "10.0.0.80",
+    "port": 21,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 64
+  },
+  {
+    "timestamp": "2024-09-28 15:00:30",
+    "source_ip": "157.245.103.94",
+    "destination_ip": "10.0.0.80",
+    "port": 25,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 64
+  },
+  {
+    "timestamp": "2024-09-28 15:00:35",
+    "source_ip": "157.245.103.94",
+    "destination_ip": "10.0.0.80",
+    "port": 53,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 64
+  },
+  {
+    "timestamp": "2024-09-28 15:00:40",
+    "source_ip": "157.245.103.94",
+    "destination_ip": "10.0.0.80",
+    "port": 110,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 64
+  },
+  {
+    "timestamp": "2024-09-28 15:00:45",
+    "source_ip": "157.245.103.94",
+    "destination_ip": "10.0.0.80",
+    "port": 143,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 64
+  },
+  {
+    "timestamp": "2024-09-28 15:00:50",
+    "source_ip": "157.245.103.94",
+    "destination_ip": "10.0.0.80",
+    "port": 993,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 64
+  },
+  {
+    "timestamp": "2024-09-28 15:00:55",
+    "source_ip": "157.245.103.94",
+    "destination_ip": "10.0.0.80",
+    "port": 995,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 64
+  },
+  {
+    "timestamp": "2024-09-28 15:01:00",
+    "source_ip": "157.245.103.94",
+    "destination_ip": "10.0.0.80",
+    "port": 3389,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 64
+  },
+  {
+    "timestamp": "2024-09-28 15:01:05",
+    "source_ip": "157.245.103.94",
+    "destination_ip": "10.0.0.80",
+    "port": 5432,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 64
+  }
+]

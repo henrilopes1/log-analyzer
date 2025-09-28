@@ -1,0 +1,23 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include requirements.txt
+include .gitignore
+
+recursive-include src/log_analyzer *.py
+recursive-include config *.json *.md
+recursive-include samples *.csv *.json
+recursive-include docs *.md *.rst
+recursive-include tests *.py
+
+exclude main.py
+exclude run_analyzer.py
+exclude config.json
+exclude *.csv
+exclude *.log
+
+global-exclude __pycache__/*
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude .DS_Store
+global-exclude Thumbs.db

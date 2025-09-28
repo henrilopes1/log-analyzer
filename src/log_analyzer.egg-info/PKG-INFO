@@ -1,0 +1,471 @@
+Metadata-Version: 2.4
+Name: log-analyzer
+Version: 2.0.0
+Summary: Ferramenta avançada para análise de logs de segurança
+Home-page: https://github.com/company/log-analyzer
+Author: Security Team
+Author-email: security@company.com
+Project-URL: Bug Reports, https://github.com/company/log-analyzer/issues
+Project-URL: Source, https://github.com/company/log-analyzer
+Project-URL: Documentation, https://log-analyzer.readthedocs.io/
+Project-URL: Changelog, https://github.com/company/log-analyzer/blob/main/CHANGELOG.md
+Keywords: security,log-analysis,cybersecurity,brute-force,port-scan,geolocation,firewall,authentication,monitoring
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: System Administrators
+Classifier: Intended Audience :: Information Technology
+Classifier: Topic :: System :: Logging
+Classifier: Topic :: Security
+Classifier: Topic :: System :: Monitoring
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: rich>=13.0.0
+Requires-Dist: colorama>=0.4.6
+Requires-Dist: python-dateutil>=2.8.2
+Requires-Dist: requests>=2.31.0
+Requires-Dist: pycountry>=22.3.13
+Requires-Dist: geopy>=2.3.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: black>=22.0.0; extra == "dev"
+Requires-Dist: flake8>=5.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Provides-Extra: docs
+Requires-Dist: mkdocs>=1.4.0; extra == "docs"
+Requires-Dist: mkdocs-material>=8.5.0; extra == "docs"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: project-url
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# 🔍 Log Analyzer - Ferramenta de Análise de Logs de Segurança
+
+Uma ferramenta Python avançada para análise de logs de segurança que ajuda a identificar tentativas de ataque, comportamentos suspeitos e gerar relatórios detalhados de segurança.
+
+## ✨ Novidades da Versão 2.0
+
+🎉 **Projeto Refatorado!** O Log Analyzer agora segue as melhores práticas de desenvolvimento Python:
+
+- **🏗️ Arquitetura Modular**: Código organizado em módulos especializados
+- **📦 Estrutura de Pacote**: Instalação como pacote Python (`pip install`)  
+- **⚙️ Configuração Flexível**: Arquivos JSON para personalização
+- **🧪 Preparado para Testes**: Estrutura para testes automatizados
+- **� Documentação Técnica**: Arquitetura e APIs documentadas
+- **🔧 Scripts Organizados**: Separação entre compatibilidade e nova versão
+
+## �📋 Funcionalidades
+
+- ✅ **Análise de Logs de Autenticação**: Identifica tentativas de login falhas
+- ✅ **Análise de Logs de Firewall**: Monitora tentativas bloqueadas
+- ✅ **Contagem de Acessos por IP**: Identifica IPs com atividade suspeita
+- ✅ **Detecção de Brute Force**: Detecta ataques baseados em múltiplas tentativas
+- ✅ **Detecção de Port Scanning**: Identifica varreduras de portas suspeitas
+- ✅ **Análise Geográfica**: Geolocalização de IPs suspeitos com detecção de anomalias
+- ✅ **Exportação CSV**: Exporta IPs suspeitos para análise posterior
+- ✅ **Suporte a Múltiplos Formatos**: CSV e JSON
+- ✅ **Relatórios Formatados**: Saída visual colorida e organizada
+- ✅ **Classificação de Risco**: Categoriza IPs por nível de risco
+
+## 🏗️ Estrutura do Projeto (Nova Organização)
+
+```
+log-analyzer/
+├── src/
+│   └── log_analyzer/           # 📦 Pacote principal
+│       ├── __init__.py         # Inicialização do pacote
+│       ├── core.py            # 🧠 Classe principal LogAnalyzer  
+│       ├── geographic.py      # 🌍 Análise geográfica
+│       ├── config.py          # ⚙️ Configurações e constantes
+│       └── utils.py           # 🔧 Funções utilitárias
+├── tests/                     # 🧪 Testes automatizados
+├── docs/                      # 📚 Documentação técnica
+│   ├── ARCHITECTURE.md        # Arquitetura do sistema
+│   └── API.md                 # Documentação da API
+├── config/                    # ⚙️ Arquivos de configuração
+│   ├── default.json           # Configurações padrão
+│   └── README.md              # Guia de configuração
+├── samples/                   # 📄 Dados de exemplo
+├── exports/                   # 📊 Relatórios exportados
+├── main.py                    # 🔄 Script original (compatibilidade)
+├── run_analyzer.py            # 🆕 Script refatorado
+├── setup.py                   # 📦 Instalação como pacote
+└── requirements.txt           # 📋 Dependências
+```
+
+## 🚀 Como Instalar
+
+### 1. Clone ou baixe o projeto
+```bash
+git clone <url-do-repositorio>
+cd log-analyzer
+```
+
+### 2. Instale as dependências
+```bash
+pip install -r requirements.txt
+```
+
+## 📊 Como Usar
+
+### Executar com dados de exemplo
+```bash
+# Usar logs CSV de exemplo
+python main.py --samples
+
+# Usar logs JSON de exemplo
+python main.py --samples-json
+```
+
+### Analisar arquivos específicos
+```bash
+# Apenas logs de firewall (CSV)
+python main.py --firewall caminho/para/firewall_logs.csv
+
+# Apenas logs de autenticação (JSON)
+python main.py --auth caminho/para/auth_logs.json
+
+# Ambos os tipos de logs (formatos mistos)
+python main.py --firewall firewall_logs.csv --auth auth_logs.json
+```
+
+### Exportar resultados para análise
+```bash
+# Exportação automática para suspect_ips.csv
+python main.py --samples --auto-export
+
+# Exportação com nome personalizado
+python main.py --samples --export-csv "security_report.csv"
+
+# Combinar análise e exportação
+python main.py --firewall logs.csv --auth auth.json --auto-export
+```
+### Personalizar detecção de ameaças
+```bash
+# Brute force mais sensível (3 tentativas em 2 minutos)
+python main.py --samples --brute-force-threshold 3 --time-window 2
+
+# Port scan menos sensível (15 portas em 1 minuto)
+python main.py --samples --port-scan-threshold 15 --port-scan-window 1
+
+# Combinação de parâmetros personalizados
+python main.py --samples --brute-force-threshold 4 --port-scan-threshold 8
+```
+
+## 📁 Estrutura do Projeto
+
+```
+log-analyzer/
+│
+├── main.py                 # Script principal
+├── requirements.txt        # Dependências do projeto
+├── README.md              # Documentação (este arquivo)
+│
+└── samples/               # Logs de exemplo para teste
+    ├── firewall_logs.csv  # Exemplo de logs de firewall (CSV)
+    ├── firewall_logs.json # Exemplo de logs de firewall (JSON)
+    ├── auth_logs.csv      # Exemplo de logs de autenticação (CSV)
+    └── auth_logs.json     # Exemplo de logs de autenticação (JSON)
+```
+
+## 📄 Formato dos Arquivos de Log
+
+O sistema suporta dois formatos de entrada: **CSV** e **JSON**.
+
+### Logs de Firewall
+
+**Formato CSV (`firewall_logs.csv`):**
+```csv
+timestamp,source_ip,destination_ip,port,protocol,action,bytes
+2024-09-28 10:15:23,192.168.1.100,10.0.0.50,22,TCP,ALLOW,1024
+2024-09-28 10:16:45,203.0.113.15,10.0.0.50,22,TCP,DENY,256
+```
+
+**Formato JSON (`firewall_logs.json`):**
+```json
+[
+  {
+    "timestamp": "2024-09-28 10:15:23",
+    "source_ip": "192.168.1.100",
+    "destination_ip": "10.0.0.50",
+    "port": 22,
+    "protocol": "TCP",
+    "action": "ALLOW",
+    "bytes": 1024
+  },
+  {
+    "timestamp": "2024-09-28 10:16:45",
+    "source_ip": "203.0.113.15",
+    "destination_ip": "10.0.0.50",
+    "port": 22,
+    "protocol": "TCP",
+    "action": "DENY",
+    "bytes": 256
+  }
+]
+```
+
+**Campos obrigatórios:**
+- `timestamp`: Data e hora no formato YYYY-MM-DD HH:MM:SS
+- `source_ip`: IP de origem
+- `destination_ip`: IP de destino
+- `port`: Porta acessada
+- `protocol`: Protocolo usado (TCP/UDP)
+- `action`: Ação tomada (ALLOW/DENY)
+- `bytes`: Bytes transferidos
+
+### Logs de Autenticação
+
+**Formato CSV (`auth_logs.csv`):**
+```csv
+timestamp,username,source_ip,action,service,user_agent
+2024-09-28 09:00:15,admin,192.168.1.100,SUCCESS,SSH,OpenSSH_8.9
+2024-09-28 09:30:45,admin,203.0.113.15,FAILED,SSH,OpenSSH_7.4
+```
+
+**Formato JSON (`auth_logs.json`):**
+```json
+[
+  {
+    "timestamp": "2024-09-28 09:00:15",
+    "username": "admin",
+    "source_ip": "192.168.1.100",
+    "action": "SUCCESS",
+    "service": "SSH",
+    "user_agent": "OpenSSH_8.9"
+  },
+  {
+    "timestamp": "2024-09-28 09:30:45",
+    "username": "admin",
+    "source_ip": "203.0.113.15",
+    "action": "FAILED",
+    "service": "SSH",
+    "user_agent": "OpenSSH_7.4"
+  }
+]
+```
+
+**Campos obrigatórios:**
+- `timestamp`: Data e hora no formato YYYY-MM-DD HH:MM:SS
+- `username`: Nome do usuário
+- `source_ip`: IP de origem da tentativa
+- `action`: Resultado (SUCCESS/FAILED)
+- `service`: Serviço usado (SSH/WEB/FTP/RDP)
+- `user_agent`: Agente usado na conexão
+
+
+
+## ⚙️ Opções Avançadas
+
+| Parâmetro | Descrição | Padrão |
+|-----------|-----------|---------|
+| `--samples` | Usar logs CSV de exemplo incluídos | - |
+| `--samples-json` | Usar logs JSON de exemplo incluídos | - |
+| `--firewall` | Caminho para arquivo de logs de firewall (CSV/JSON) | - |
+| `--auth` | Caminho para arquivo de logs de autenticação (CSV/JSON) | - |
+| `--brute-force-threshold` | Mínimo de tentativas para brute force | 5 |
+| `--time-window` | Janela de tempo em minutos para brute force | 1 |
+| `--port-scan-threshold` | Mínimo de portas para port scanning | 10 |
+| `--port-scan-window` | Janela de tempo em minutos para port scanning | 1 |
+| `--export-csv` | Exportar para arquivo CSV específico | - |
+| `--auto-export` | Exportar automaticamente para suspect_ips.csv | - |
+
+## 🔒 Critérios de Segurança
+
+### Classificação de Risco por IP:
+- 🔴 **Alto Risco**: 10+ acessos
+- 🟡 **Médio Risco**: 5-10 acessos  
+- 🟢 **Baixo Risco**: < 5 acessos
+
+### Detecção de Brute Force:
+- **Padrão**: 5+ tentativas falhadas em 1 minuto
+- **Configurável**: Use `--brute-force-threshold` e `--time-window`
+
+### Detecção de Port Scanning:
+- **Padrão**: 10+ portas diferentes em 1 minuto
+- **Configurável**: Use `--port-scan-threshold` e `--port-scan-window`
+
+## 🛠️ Dependências
+
+- **pandas**: Manipulação de dados CSV
+- **rich**: Formatação colorida da saída
+- **colorama**: Compatibilidade de cores no Windows
+- **python-dateutil**: Manipulação avançada de datas
+
+## 📝 Casos de Uso
+
+### 1. Monitoramento Diário
+```bash
+# CSV com exportação
+python main.py --firewall /var/log/firewall.csv --auth /var/log/auth.csv --auto-export
+
+# JSON com exportação personalizada
+python main.py --firewall /var/log/firewall.json --auth /var/log/auth.json --export-csv "daily_report.csv"
+
+# Formatos mistos
+python main.py --firewall /var/log/firewall.csv --auth /var/log/auth.json --auto-export
+```
+
+### 2. Análise de Incidente
+```bash
+# Procurar ataques mais agressivos com exportação (JSON)
+python main.py --auth incident_logs.json --brute-force-threshold 3 --time-window 5 --export-csv "incident_ips.csv"
+```
+
+### 3. Relatório Semanal
+```bash
+# Relatório completo com exportação (CSV)
+python main.py --firewall week_firewall.csv --auth week_auth.csv --auto-export > security_report.txt
+
+# Relatório completo (JSON)
+python main.py --firewall week_firewall.json --auth week_auth.json --export-csv "weekly_suspects.csv"
+```
+
+## 🚨 Alertas de Segurança
+
+O sistema detecta automaticamente:
+
+- ✅ **Tentativas de login falhadas excessivas**
+- ✅ **IPs com comportamento suspeito**
+- ✅ **Possíveis ataques de brute force**
+- ✅ **Varreduras de portas (port scanning)**
+- ✅ **Tentativas de acesso a portas sensíveis**
+- ✅ **Padrões anômalos de tráfego**
+
+## 📞 Troubleshooting
+
+### Erro: "Arquivo não encontrado"
+- Verifique se o caminho do arquivo está correto
+- Use caminhos absolutos quando possível
+
+### Erro: "Formato de arquivo não suportado"
+- Verifique se o arquivo tem extensão .csv ou .json
+- Certifique-se que o arquivo não está corrompido
+
+### Erro: "Formato de data inválido"
+- Certifique-se que o timestamp está no formato: `YYYY-MM-DD HH:MM:SS`
+
+### Erro: "Colunas obrigatórias ausentes"
+- Verifique se o CSV/JSON contém todas as colunas necessárias
+- Confira os cabeçalhos do arquivo ou estrutura JSON
+
+### Erro: "Erro ao decodificar JSON"
+- Verifique se o arquivo JSON tem sintaxe válida
+- Use um validador JSON online para verificar o formato
+
+### Nenhum brute force detectado
+- Ajuste os parâmetros `--brute-force-threshold` e `--time-window`
+- Verifique se existem tentativas falhadas nos logs
+
+## 🎓 Exemplo Completo
+
+Para testar o sistema completo:
+
+```bash
+# 1. Executar com dados CSV de exemplo
+python main.py --samples
+
+# 2. Executar com dados JSON de exemplo
+python main.py --samples-json
+
+# 3. Ver detecção menos restritiva (JSON)
+python main.py --samples-json --brute-force-threshold 3
+
+# 4. Testar exportação CSV
+python main.py --samples --auto-export
+
+# 5. Configuração completa com exportação
+python main.py --samples --brute-force-threshold 3 --port-scan-threshold 8 --export-csv "analysis_results.csv"
+```
+
+## 📈 Melhorias Futuras
+
+- [ ] Integração com APIs de threat intelligence
+- [ ] Export de relatórios em PDF/HTML
+- [ ] Dashboard web interativo  
+- [x] **Análise Geográfica**: Implementado! Geolocalização de IPs suspeitos com detecção de anomalias
+- [ ] Alertas em tempo real
+- [ ] Machine learning para detecção de anomalias
+- [ ] Suporte a mais formatos de log (syslog, XML)
+- [ ] Suporte a logs estruturados do Elastic Stack
+- [ ] Análise de correlação entre eventos
+- [ ] Integração com SIEM (Security Information and Event Management)
+- [ ] API REST para integração com outras ferramentas
+
+## 🌍 Análise Geográfica (Novo!)
+
+O Log Analyzer agora inclui recursos avançados de análise geográfica para IPs suspeitos:
+
+### 📍 Recursos Disponíveis
+
+- **Geolocalização de IPs**: Localização geográfica automática de IPs suspeitos
+- **Distribuição por País**: Análise da distribuição geográfica dos ataques
+- **Detecção de Países de Alto Risco**: Identificação automática de países frequentemente associados a ataques
+- **Análise de ISPs**: Identificação de provedores suspeitos, VPNs e proxies
+- **Coordenadas Geográficas**: Localização precisa com latitude e longitude
+- **Recomendações Automáticas**: Sugestões de segurança baseadas na análise geográfica
+
+### ⚙️ Configuração da Análise Geográfica
+
+```bash
+# Análise completa com geolocalização (padrão)
+python main.py --samples
+
+# Desabilitar análise geográfica para melhor performance
+python main.py --samples --disable-geo
+
+# Configurar timeout personalizado para conexões lentas
+python main.py --samples --geo-timeout 10
+```
+
+### 🔍 Informações Coletadas
+
+Para cada IP suspeito, o sistema obtém:
+- **País e região**
+- **Cidade**
+- **Coordenadas GPS**
+- **ISP (Provedor de internet)**
+- **Organização responsável**
+- **Classificação de risco baseada em localização**
+
+### 🚨 Classificação de Risco Geográfico
+
+- **🚨 Alto Risco**: IPs de países suspeitos ou com múltiplos fatores de risco
+- **⚠️ Médio Risco**: IPs com um fator de risco identificado
+- **✅ Baixo Risco**: IPs sem fatores de risco aparentes
+
+### 💡 Considerações de Performance
+
+- **Cache Inteligente**: Evita consultas redundantes para o mesmo IP
+- **Rate Limiting**: Respeita os limites da API de geolocalização
+- **Timeout Configurável**: Evita travamentos em conexões lentas
+- **Opção de Desabilitar**: Para análises rápidas quando geolocalização não é necessária
+
+---
+
+## 👨‍💻 Autor
+
+**Security Team**  
+Projeto desenvolvido para análise de segurança em ambientes corporativos.
+
+**Data**: Dezembro 2024  
+**Versão**: 2.0 - Agora com análise geográfica!
+
+---
+
+*Para dúvidas ou sugestões, entre em contato com a equipe de segurança.*
