@@ -1,4 +1,13 @@
-# � Log Analyzer
+# 🛡️ Log Analyzer - Cybersecurity Tool
+
+[![CI/CD Pipeline](https://img.shields.io/github/actions/workflow/status/henrilopes1/log-analyzer/ci.yml?label=CI%2FCD)](https://github.com/henrilopes1/log-analyzer/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/Tests-59%20passing-brightgreen.svg)](https://github.com/henrilopes1/log-analyzer/actions)
+[![Coverage](https://img.shields.io/badge/Coverage-35%25-orange.svg)](https://codecov.io/gh/henrilopes1/log-analyzer)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://python.org)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Security](https://img.shields.io/badge/Security-Bandit%20✓-brightgreen.svg)](https://bandit.readthedocs.io/)
+
+Uma ferramenta profissional de análise de logs de segurança desenvolvida em Python, projetada para detectar ameaças cibernéticas, realizar análise geográfica de IPs e gerar relatórios detalhados para profissionais de cybersecurity.er
 
 ![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
 ![Tests](https://img.shields.io/badge/Tests-41%20total-blue.svg)
@@ -13,46 +22,25 @@ Um analisador profissional de logs de segurança desenvolvido em Python com arqu
 
 Uma ferramenta Python avançada para análise de logs de segurança com detecção automática de ameaças, análise geográfica e exportação de relatórios.
 
-## ✨ Características
+## 🎯 Sobre o Projeto
 
-- 🔍 **Detecção Automática**: Identifica brute force, port scanning e tentativas de login falhadas
-- 🌍 **Análise Geográfica**: Localização de IPs suspeitos com detecção de anomalias
-- 📊 **Classificação de Riscos**: Sistema inteligente de scoring (Alto/Médio/Baixo)
-- 💾 **Exportação CSV**: Relatórios estruturados para integração SIEM
-- 🎨 **Interface Visual**: Tabelas e painéis coloridos com Rich
-- ⚙️ **Configurável**: Parâmetros ajustáveis para detecção
-- 📦 **Estrutura Modular**: Código organizado seguindo boas práticas Python
+O **Log Analyzer** é uma solução completa para análise de segurança cibernética que processa logs de firewall e autenticação, identificando automaticamente ameaças como ataques de força bruta, varreduras de porta e atividades suspeitas. 
 
-## 🚀 Formas de Uso
+### 🔍 Principais Funcionalidades
 
-### **Opção 1: Comando Instalado (Recomendado)**
-```bash
-# Instalar como pacote
-pip install -e .
+- **🚨 Detecção de Ataques**: Identifica brute force, port scanning e tentativas de intrusão
+- **🌍 Análise Geográfica**: Rastreamento e localização de IPs maliciosos com API externa
+- **📊 Classificação de Riscos**: Sistema inteligente de scoring (Alto/Médio/Baixo risco)
+- **� Relatórios Detalhados**: Exportação em CSV e JSON para integração SIEM
+- **🎨 Interface Rica**: Visualização colorida e interativa no terminal
+- **⚙️ Altamente Configurável**: Parâmetros ajustáveis para diferentes cenários
+- **🧪 Testes Abrangentes**: 59 testes automatizados com 35% de cobertura
 
-# Usar comando global
-analyzer --samples --disable-geo
-analyzer --samples-json --auto-export
-```
-
-### **Opção 2: Módulo Python**
-```bash
-# Executar como módulo
-python -m src.log_analyzer --samples
-python -m log_analyzer --samples --auto-export
-```
-
-### **Opção 3: Wrapper de Compatibilidade**
-```bash
-# Usar wrapper (deprecated)
-python main.py --samples --disable-geo
-```
-
-## 📥 Instalação
+## � Instalação Rápida
 
 ```bash
 # Clonar o repositório
-git clone https://github.com/company/log-analyzer.git
+git clone https://github.com/henrilopes1/log-analyzer.git
 cd log-analyzer
 
 # Criar ambiente virtual
@@ -63,188 +51,122 @@ source .venv/bin/activate  # Linux/Mac
 # Instalar dependências
 pip install -r requirements.txt
 
-# Instalar como pacote (recomendado)
+# Instalar como pacote
 pip install -e .
 ```
 
-## 🎯 Exemplos de Uso
+## 💡 Como Usar
 
-### **Análise Rápida com Dados de Exemplo**
+### Análise com dados de exemplo
 ```bash
-# Análise básica
-analyzer --samples --disable-geo
+# Análise básica (sem geolocalização)
+python -m log_analyzer --samples --disable-geo
+
+# Análise completa com geolocalização
+python -m log_analyzer --samples
 
 # Com exportação automática
-analyzer --samples --auto-export
-
-# Formato JSON
-analyzer --samples-json --disable-geo
+python -m log_analyzer --samples --auto-export
 ```
 
-### **Análise com Arquivos Personalizados**
+### Análise com arquivos personalizados
 ```bash
 # Arquivos específicos
-analyzer --firewall firewall.csv --auth auth.csv
+python -m log_analyzer --firewall firewall.csv --auth auth.csv
 
 # Com parâmetros customizados
-analyzer --firewall logs.csv --brute-force-threshold 3 --port-scan-threshold 5
-
-# Com análise geográfica
-analyzer --auth auth.csv --geo-timeout 10
+python -m log_analyzer --firewall logs.csv --brute-force-threshold 3
 ```
 
-### **Exportação de Relatórios**
-```bash
-# Exportação automática
-analyzer --samples --auto-export
+## 📊 Exemplo de Saída
 
-# Arquivo personalizado
-analyzer --samples --export-csv "relatorio_$(date +%Y%m%d).csv"
+```
+🛡️ TENTATIVAS BLOQUEADAS PELO FIREWALL
+┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
+┃ IP de Origem  ┃ Tentativas      ┃ Portas Alvo     ┃ Protocolos      ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
+│ 94.102.49.123 │       15        │ 22, 80, 443     │ TCP, UDP        │
+│ 203.0.113.15  │        8        │ 22, 3389        │ TCP             │
+└───────────────┴──────────────────┴──────────────────┴──────────────────┘
+
+🚨 ATAQUES DE BRUTE FORCE DETECTADOS!
+┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
+┃ IP Atacante   ┃ Tentativas      ┃ Usuários Alvo   ┃ Serviços        ┃
+┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
+│ 192.168.1.100 │       12        │ admin, root     │ ssh, ftp        │
+└───────────────┴──────────────────┴──────────────────┴──────────────────┘
 ```
 
-## 🔧 Parâmetros de Configuração
-
-| Parâmetro | Padrão | Descrição |
-|-----------|--------|-----------|
-| `--brute-force-threshold` | 5 | Tentativas mínimas para detectar brute force |
-| `--time-window` | 1 | Janela de tempo em minutos |
-| `--port-scan-threshold` | 10 | Portas mínimas para detectar port scan |
-| `--port-scan-window` | 1 | Janela de tempo para port scan |
-| `--geo-timeout` | 5 | Timeout para consultas geográficas |
-| `--disable-geo` | - | Desabilitar análise geográfica |
-
-## 📊 Formatos de Entrada
-
-### **CSV de Firewall**
-```csv
-timestamp,source_ip,dest_ip,dest_port,protocol,action
-2024-09-28 11:00:10,94.102.49.123,10.0.0.50,22,TCP,BLOCK
-```
-
-### **CSV de Autenticação**
-```csv
-timestamp,username,source_ip,action,service,user_agent
-2024-09-28 09:30:45,admin,203.0.113.15,FAILED,SSH,OpenSSH_7.4
-```
-
-### **JSON (Alternativo)**
-```json
-[
-  {
-    "timestamp": "2024-09-28 11:00:10",
-    "source_ip": "94.102.49.123",
-    "dest_ip": "10.0.0.50",
-    "dest_port": 22,
-    "protocol": "TCP",
-    "action": "BLOCK"
-  }
-]
-```
-
-## 📁 Estrutura do Projeto
+## 🏗️ Arquitetura do Projeto
 
 ```
 log-analyzer/
-├── 📁 src/log_analyzer/           # Código modular principal
-│   ├── __init__.py               # Configuração do pacote
-│   ├── __main__.py               # Ponto de entrada do módulo
-│   ├── main.py                   # Função principal
-│   ├── core.py                   # LogAnalyzer (classe principal)
+├── 📁 src/log_analyzer/           # Código principal
+│   ├── core.py                   # Motor de análise
 │   ├── geographic.py             # Análise geográfica
 │   ├── utils.py                  # Funções utilitárias
 │   └── config.py                 # Configurações
+├── 📁 tests/                     # Testes automatizados (59 testes)
 ├── 📁 samples/                   # Logs de exemplo
 ├── 📁 exports/                   # Relatórios gerados
-├── 📁 config/                    # Configurações externas
-├── 📁 legacy/                    # Código original (compatibilidade)
-├── 📁 tests/                     # Testes unitários
-├── 📁 docs/                      # Documentação
-├── main.py                       # Wrapper de compatibilidade
-├── setup.py                      # Configuração de instalação
+├── 📁 .github/workflows/         # CI/CD com GitHub Actions
+├── 📁 scripts/                   # Scripts de automação
 └── requirements.txt              # Dependências
+```
+
+## � Tecnologias Utilizadas
+
+- **Python 3.9+**: Linguagem principal
+- **Pandas**: Processamento de dados
+- **Rich**: Interface visual no terminal  
+- **Requests**: Consultas de geolocalização
+- **Pytest**: Framework de testes
+- **GitHub Actions**: CI/CD automatizado
+- **Docker**: Containerização
+
+## 🧪 Qualidade e Testes
+
+O projeto possui uma robusta suite de testes e pipeline de CI/CD:
+
+- ✅ **59 testes automatizados** (100% de aprovação)
+- 📊 **35% de cobertura de código** (em expansão)
+- 🔒 **0 vulnerabilidades** de segurança (Bandit)
+- 🤖 **CI/CD automatizado** com GitHub Actions
+- 📦 **Build e deploy** automatizados
+- 🐳 **Containerização** com Docker
+
+```bash
+# Executar testes localmente
+pytest tests/ -v
+
+# Com relatório de cobertura
+pytest --cov=src --cov-report=html
+
+# Pipeline completo local
+python scripts/ci_cd_local.py
 ```
 
 ## 🛠️ Desenvolvimento
 
-### **Executar Testes**
 ```bash
-# Executar todos os testes
-pytest
+# Instalar dependências de desenvolvimento
+pip install -r requirements-dev.txt
 
-# Com cobertura
-pytest --cov=src/log_analyzer --cov-report=html
-```
+# Formatação automática
+make format
 
-### **Formatação de Código**
-```bash
-# Black (formatação)
-black src/
+# Verificação de qualidade
+make lint
 
-# Flake8 (linting)
-flake8 src/
-
-# MyPy (type checking)
-mypy src/
-```
-
-### **Instalar para Desenvolvimento**
-```bash
-pip install -e ".[dev]"
-```
-
-## 🔍 Funcionalidades Detectadas
-
-### **🚨 Ataques de Brute Force**
-- Múltiplas tentativas de login falhadas
-- Janela de tempo configurável
-- Detecção por IP, usuário e serviço
-
-### **🔍 Port Scanning**
-- Varredura de múltiplas portas
-- Análise de taxa de tentativas
-- Detecção de reconnaissance
-
-### **🌍 Análise Geográfica**
-- Localização de IPs suspeitos
-- Detecção de concentrações anômalas
-- Informações de ISP e região
-
-### **📊 Classificação de Riscos**
-- 🔴 **Alto Risco**: >10 acessos ou ataques confirmados
-- 🟡 **Médio Risco**: 5-10 acessos
-- 🟢 **Baixo Risco**: <5 acessos
-
-## 📈 Saídas e Relatórios
-
-### **Console (Rich Interface)**
-- Tabelas coloridas e formatadas
-- Painéis informativos
-- Barras de progresso em tempo real
-
-### **Arquivo CSV (exports/)**
-```csv
-ip,tipo_de_alerta,quantidade_de_ocorrencias
-203.0.113.15,BRUTE_FORCE,6
-94.102.49.123,PORT_SCAN,13
-```
-
-## 🔄 Migração da Versão 1.x
-
-A versão 2.0 mantém **compatibilidade completa** com scripts antigos:
-
-```bash
-# ❌ Versão antiga (ainda funciona)
-python main.py --samples
-
-# ✅ Versão nova (recomendada)
-analyzer --samples
+# Executar todos os checks
+make ci
 ```
 
 ## 🤝 Contribuição
 
-1. Fork o projeto
+1. Fork o repositório
 2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)
-3. Commit suas mudanças (`git commit -am 'Adiciona nova funcionalidade'`)
+3. Faça commit das mudanças (`git commit -am 'Adiciona nova funcionalidade'`)
 4. Push para a branch (`git push origin feature/nova-funcionalidade`)
 5. Abra um Pull Request
 
@@ -252,18 +174,12 @@ analyzer --samples
 
 Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
-## 👨‍💻 Autor
+## 👨‍💻 Desenvolvedor
 
-**Security Team**
-- 📧 Email: security@company.com
-- 🐙 GitHub: [@security-team](https://github.com/security-team)
-
-## 🆘 Suporte
-
-- 📚 [Documentação](https://log-analyzer.readthedocs.io/)
-- 🐛 [Issues](https://github.com/company/log-analyzer/issues)
-- 💬 [Discussions](https://github.com/company/log-analyzer/discussions)
+**Henri Lopes**
+- 🐙 GitHub: [@henrilopes1](https://github.com/henrilopes1)
+- � Contato: [henri@example.com]
 
 ---
 
-**⭐ Se este projeto foi útil, considere dar uma estrela no GitHub!**
+**⭐ Se este projeto foi útil para você, considere dar uma estrela no repositório!**
