@@ -5,8 +5,6 @@ requirements.txt
 setup.py
 config/README.md
 config/default.json
-docs/ARCHITECTURE.md
-docs/README.md
 samples/auth_logs.csv
 samples/auth_logs.json
 samples/firewall_logs.csv

@@ -1,60 +1,62 @@
 Metadata-Version: 2.4
-Name: log-analyzer
-Version: 2.0.0
-Summary: Ferramenta avançada para análise de logs de segurança
+Name: log-analyzer-cyber
+Version: 1.0.0
+Summary: Advanced log analysis tool for cybersecurity professionals
 Home-page: https://github.com/company/log-analyzer
 Author: Security Team
-Author-email: security@company.com
-Project-URL: Bug Reports, https://github.com/company/log-analyzer/issues
-Project-URL: Source, https://github.com/company/log-analyzer
-Project-URL: Documentation, https://log-analyzer.readthedocs.io/
-Project-URL: Changelog, https://github.com/company/log-analyzer/blob/main/CHANGELOG.md
-Keywords: security,log-analysis,cybersecurity,brute-force,port-scan,geolocation,firewall,authentication,monitoring
+Author-email: Henri Lopes <henri@example.com>
+Maintainer-email: Henri Lopes <henri@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/henrilopes1/log-analyzer
+Project-URL: Documentation, https://log-analyzer.readthedocs.io
+Project-URL: Repository, https://github.com/henrilopes1/log-analyzer
+Project-URL: Issues, https://github.com/henrilopes1/log-analyzer/issues
+Project-URL: Changelog, https://github.com/henrilopes1/log-analyzer/blob/main/CHANGELOG.md
+Keywords: cybersecurity,log-analysis,security,forensics,threat-detection
 Classifier: Development Status :: 4 - Beta
-Classifier: Intended Audience :: System Administrators
 Classifier: Intended Audience :: Information Technology
-Classifier: Topic :: System :: Logging
-Classifier: Topic :: Security
-Classifier: Topic :: System :: Monitoring
+Classifier: Intended Audience :: System Administrators
 Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
 Classifier: Programming Language :: Python :: 3
-Classifier: Programming Language :: Python :: 3.8
 Classifier: Programming Language :: Python :: 3.9
 Classifier: Programming Language :: Python :: 3.10
 Classifier: Programming Language :: Python :: 3.11
-Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Security
+Classifier: Topic :: System :: Logging
+Classifier: Topic :: System :: Systems Administration
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 Requires-Dist: pandas>=2.0.0
-Requires-Dist: rich>=13.0.0
-Requires-Dist: colorama>=0.4.6
-Requires-Dist: python-dateutil>=2.8.2
 Requires-Dist: requests>=2.31.0
-Requires-Dist: pycountry>=22.3.13
-Requires-Dist: geopy>=2.3.0
+Requires-Dist: rich>=13.7.0
+Requires-Dist: click>=8.1.7
+Requires-Dist: pyyaml>=6.0.1
+Requires-Dist: python-dateutil>=2.8.2
 Provides-Extra: dev
-Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest>=8.0.0; extra == "dev"
 Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
-Requires-Dist: black>=22.0.0; extra == "dev"
-Requires-Dist: flake8>=5.0.0; extra == "dev"
-Requires-Dist: mypy>=1.0.0; extra == "dev"
+Requires-Dist: black>=24.0.0; extra == "dev"
+Requires-Dist: flake8>=7.0.0; extra == "dev"
+Requires-Dist: mypy>=1.8.0; extra == "dev"
+Requires-Dist: bandit>=1.7.0; extra == "dev"
+Requires-Dist: safety>=3.0.0; extra == "dev"
 Provides-Extra: docs
-Requires-Dist: mkdocs>=1.4.0; extra == "docs"
-Requires-Dist: mkdocs-material>=8.5.0; extra == "docs"
+Requires-Dist: sphinx>=7.0.0; extra == "docs"
+Requires-Dist: sphinx-rtd-theme>=2.0.0; extra == "docs"
 Dynamic: author
-Dynamic: author-email
-Dynamic: classifier
-Dynamic: description
-Dynamic: description-content-type
 Dynamic: home-page
-Dynamic: keywords
-Dynamic: project-url
-Dynamic: provides-extra
-Dynamic: requires-dist
 Dynamic: requires-python
-Dynamic: summary
 
-# 🛡️ Log Analyzer - Ferramenta de Análise de Segurança
+# � Log Analyzer
+
+![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
+![Tests](https://img.shields.io/badge/Tests-41%20total-blue.svg)
+![Coverage](https://img.shields.io/badge/Coverage-23%25-orange.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+
+Um analisador profissional de logs de segurança desenvolvido em Python com arquitetura modular para detectar ameaças e gerar relatórios detalhados.
 
 [![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
 [![Version](https://img.shields.io/badge/version-2.0.0-green.svg)](https://github.com/company/log-analyzer)

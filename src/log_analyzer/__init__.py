@@ -14,16 +14,17 @@ __version__ = "2.0.0"
 __author__ = "Security Team"
 __description__ = "Ferramenta de análise de logs de segurança"
 
-from .core import LogAnalyzer
-from .utils import setup_logging, validate_file_format
 from .config import DEFAULT_CONFIG
+from .core import LogAnalyzer
 from .main import main
-
-__all__ = ['LogAnalyzer', 'setup_logging', 'validate_file_format', 'DEFAULT_CONFIG', 'main']
+from .utils import setup_logging, validate_file_format
 
 __all__ = [
-    'LogAnalyzer',
-    'setup_logging', 
-    'validate_file_format',
-    'DEFAULT_CONFIG'
+    "LogAnalyzer",
+    "setup_logging",
+    "validate_file_format",
+    "DEFAULT_CONFIG",
+    "main",
 ]
+
+__all__ = ["LogAnalyzer", "setup_logging", "validate_file_format", "DEFAULT_CONFIG"]

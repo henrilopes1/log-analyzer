@@ -1,0 +1,114 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release'
+        required: true
+        type: string
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  test-and-build:
+    name: Test and Build for Release
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+        pip install build twine
+    
+    - name: Run full test suite
+      run: |
+        python -m pytest tests/ -v --cov=src --cov-report=xml --cov-fail-under=85
+    
+    - name: Run security checks
+      run: |
+        bandit -r src/
+        safety check
+    
+    - name: Run linting
+      run: |
+        black --check src/ tests/
+        flake8 src/ tests/
+        isort --check-only src/ tests/
+    
+    - name: Build package
+      run: |
+        python -m build
+    
+    - name: Check package
+      run: |
+        twine check dist/*
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: release-distributions
+        path: dist/
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    environment:
+      name: pypi
+      url: https://pypi.org/p/log-analyzer-cyber
+    
+    permissions:
+      id-token: write  # Para PyPI trusted publishing
+    
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: release-distributions
+        path: dist/
+    
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
+
+  create-github-release:
+    name: Create GitHub Release
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: release-distributions
+        path: dist/
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ inputs.version }}
+        name: Release v${{ inputs.version }}
+        draft: false
+        prerelease: false
+        files: dist/*
+        generate_release_notes: true

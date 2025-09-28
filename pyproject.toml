@@ -1,0 +1,202 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "log-analyzer-cyber"
+version = "1.0.0"
+description = "Advanced log analysis tool for cybersecurity professionals"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Henri Lopes", email = "henri@example.com"}
+]
+maintainers = [
+    {name = "Henri Lopes", email = "henri@example.com"}
+]
+keywords = [
+    "cybersecurity",
+    "log-analysis",
+    "security",
+    "forensics",
+    "threat-detection"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: System :: Logging",
+    "Topic :: System :: Systems Administration",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "pandas>=2.0.0",
+    "requests>=2.31.0",
+    "rich>=13.7.0",
+    "click>=8.1.7",
+    "pyyaml>=6.0.1",
+    "python-dateutil>=2.8.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=24.0.0",
+    "flake8>=7.0.0",
+    "mypy>=1.8.0",
+    "bandit>=1.7.0",
+    "safety>=3.0.0",
+]
+docs = [
+    "sphinx>=7.0.0",
+    "sphinx-rtd-theme>=2.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/henrilopes1/log-analyzer"
+Documentation = "https://log-analyzer.readthedocs.io"
+Repository = "https://github.com/henrilopes1/log-analyzer"
+Issues = "https://github.com/henrilopes1/log-analyzer/issues"
+Changelog = "https://github.com/henrilopes1/log-analyzer/blob/main/CHANGELOG.md"
+
+[project.scripts]
+log-analyzer = "log_analyzer.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["log_analyzer*"]
+exclude = ["tests*"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+testpaths = ["tests"]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "slow: Slow tests",
+    "network: Tests requiring network access",
+]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+omit = [
+    "tests/*",
+    "*/venv/*",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["log_analyzer"]
+known_third_party = ["pandas", "requests", "rich", "click", "yaml"]
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "E501", "W503", "F401"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "docs/source/conf.py",
+    "old",
+    "build",
+    "dist",
+    ".venv",
+    "venv",
+]
+per-file-ignores = [
+    "__init__.py:F401",
+    "tests/*:D",
+]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+disallow_untyped_decorators = false
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+ignore_missing_imports = true
+
+[tool.bandit]
+exclude_dirs = ["tests", "build", "dist"]
+skips = ["B101", "B601"]
+
+[tool.interrogate]
+ignore-init-method = true
+ignore-init-module = true
+ignore-magic = false
+ignore-semiprivate = false
+ignore-private = false
+ignore-property-decorators = false
+ignore-module = true
+ignore-nested-functions = false
+ignore-nested-classes = true
+ignore-setters = false
+fail-under = 80
+exclude = ["setup.py", "docs", "build"]
+ignore-regex = ["^get$", "^mock_.*", ".*BaseClass.*"]
+verbose = 0
+quiet = false
+whitelist-regex = []
+color = true
+omit-covered-files = false

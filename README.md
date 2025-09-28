@@ -1,4 +1,11 @@
-# 🛡️ Log Analyzer - Ferramenta de Análise de Segurança
+# � Log Analyzer
+
+![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
+![Tests](https://img.shields.io/badge/Tests-41%20total-blue.svg)
+![Coverage](https://img.shields.io/badge/Coverage-23%25-orange.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+
+Um analisador profissional de logs de segurança desenvolvido em Python com arquitetura modular para detectar ameaças e gerar relatórios detalhados.
 
 [![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
 [![Version](https://img.shields.io/badge/version-2.0.0-green.svg)](https://github.com/company/log-analyzer)
