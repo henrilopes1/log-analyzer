@@ -6,21 +6,9 @@
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Security](https://img.shields.io/badge/Security-Bandit%20✓-brightgreen.svg)](https://bandit.readthedocs.io/)
+[![API](https://img.shields.io/badge/API-REST%20FastAPI-green.svg)](http://127.0.0.1:8000/docs)
 
-Uma ferramenta profissional de análise de logs de segurança desenvolvida em Python, projetada para detectar ameaças cibernéticas, realizar análise geográfica de IPs e gerar relatórios detalhados para profissionais de cybersecurity.er
-
-![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
-![Tests](https://img.shields.io/badge/Tests-41%20total-blue.svg)
-![Coverage](https://img.shields.io/badge/Coverage-23%25-orange.svg)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-
-Um analisador profissional de logs de segurança desenvolvido em Python com arquitetura modular para detectar ameaças e gerar relatórios detalhados.
-
-[![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
-[![Version](https://img.shields.io/badge/version-2.0.0-green.svg)](https://github.com/company/log-analyzer)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
-Uma ferramenta Python avançada para análise de logs de segurança com detecção automática de ameaças, análise geográfica e exportação de relatórios.
+Uma ferramenta profissional de análise de logs de segurança desenvolvida em Python, com **API REST FastAPI integrada**, projetada para detectar ameaças cibernéticas, realizar análise geográfica de IPs e gerar relatórios detalhados para profissionais de cybersecurity.
 
 ## 🎯 Sobre o Projeto
 
@@ -31,12 +19,14 @@ O **Log Analyzer** é uma solução completa para análise de segurança cibern�
 - **🚨 Detecção de Ataques**: Identifica brute force, port scanning e tentativas de intrusão
 - **🌍 Análise Geográfica**: Rastreamento e localização de IPs maliciosos com API externa
 - **📊 Classificação de Riscos**: Sistema inteligente de scoring (Alto/Médio/Baixo risco)
-- **� Relatórios Detalhados**: Exportação em CSV e JSON para integração SIEM
+- **📋 Relatórios Detalhados**: Exportação em CSV e JSON para integração SIEM
 - **🎨 Interface Rica**: Visualização colorida e interativa no terminal
+- **🌐 API REST**: Interface FastAPI para integração com outras aplicações
 - **⚙️ Altamente Configurável**: Parâmetros ajustáveis para diferentes cenários
-- **🧪 Testes Abrangentes**: 59 testes automatizados com 35% de cobertura
+- **🧪 Testes Abrangentes**: 59+ testes automatizados com 35% de cobertura
+- **🐳 Containerização**: Suporte completo Docker e Docker Compose
 
-## � Instalação Rápida
+## ⚡ Instalação Rápida
 
 ```bash
 # Clonar o repositório
@@ -48,7 +38,9 @@ python -m venv .venv
 source .venv/bin/activate  # Linux/Mac
 .venv\Scripts\activate     # Windows
 
-# Instalar dependências
+# Instalar dependências (incluindo API)
+make api-install
+# ou manualmente:
 pip install -r requirements.txt
 
 # Instalar como pacote
@@ -57,7 +49,9 @@ pip install -e .
 
 ## 💡 Como Usar
 
-### Análise com dados de exemplo
+### 🖥️ Linha de Comando
+
+#### Análise com dados de exemplo
 ```bash
 # Análise básica (sem geolocalização)
 python -m log_analyzer --samples --disable-geo
@@ -69,7 +63,7 @@ python -m log_analyzer --samples
 python -m log_analyzer --samples --auto-export
 ```
 
-### Análise com arquivos personalizados
+#### Análise com arquivos personalizados
 ```bash
 # Arquivos específicos
 python -m log_analyzer --firewall firewall.csv --auth auth.csv
@@ -78,108 +72,195 @@ python -m log_analyzer --firewall firewall.csv --auth auth.csv
 python -m log_analyzer --firewall logs.csv --brute-force-threshold 3
 ```
 
-## 📊 Exemplo de Saída
+### 🌐 API REST
 
-```
-🛡️ TENTATIVAS BLOQUEADAS PELO FIREWALL
-┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
-┃ IP de Origem  ┃ Tentativas      ┃ Portas Alvo     ┃ Protocolos      ┃
-┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
-│ 94.102.49.123 │       15        │ 22, 80, 443     │ TCP, UDP        │
-│ 203.0.113.15  │        8        │ 22, 3389        │ TCP             │
-└───────────────┴──────────────────┴──────────────────┴──────────────────┘
-
-🚨 ATAQUES DE BRUTE FORCE DETECTADOS!
-┏━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
-┃ IP Atacante   ┃ Tentativas      ┃ Usuários Alvo   ┃ Serviços        ┃
-┡━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
-│ 192.168.1.100 │       12        │ admin, root     │ ssh, ftp        │
-└───────────────┴──────────────────┴──────────────────┴──────────────────┘
-```
-
-## 🏗️ Arquitetura do Projeto
-
-```
-log-analyzer/
-├── 📁 src/log_analyzer/           # Código principal
-│   ├── core.py                   # Motor de análise
-│   ├── geographic.py             # Análise geográfica
-│   ├── utils.py                  # Funções utilitárias
-│   └── config.py                 # Configurações
-├── 📁 tests/                     # Testes automatizados (59 testes)
-├── 📁 samples/                   # Logs de exemplo
-├── 📁 exports/                   # Relatórios gerados
-├── 📁 .github/workflows/         # CI/CD com GitHub Actions
-├── 📁 scripts/                   # Scripts de automação
-└── requirements.txt              # Dependências
-```
-
-## � Tecnologias Utilizadas
-
-- **Python 3.9+**: Linguagem principal
-- **Pandas**: Processamento de dados
-- **Rich**: Interface visual no terminal  
-- **Requests**: Consultas de geolocalização
-- **Pytest**: Framework de testes
-- **GitHub Actions**: CI/CD automatizado
-- **Docker**: Containerização
-
-## 🧪 Qualidade e Testes
-
-O projeto possui uma robusta suite de testes e pipeline de CI/CD:
-
-- ✅ **59 testes automatizados** (100% de aprovação)
-- 📊 **35% de cobertura de código** (em expansão)
-- 🔒 **0 vulnerabilidades** de segurança (Bandit)
-- 🤖 **CI/CD automatizado** com GitHub Actions
-- 📦 **Build e deploy** automatizados
-- 🐳 **Containerização** com Docker
-
+#### Iniciar o servidor da API
 ```bash
-# Executar testes localmente
-pytest tests/ -v
+# Desenvolvimento com reload automático
+make api-dev
+# ou
+python run_api.py --reload --debug
 
-# Com relatório de cobertura
-pytest --cov=src --cov-report=html
+# Produção
+make api-prod
+# ou
+python run_api.py --prod --host 0.0.0.0
+```
 
-# Pipeline completo local
-python scripts/ci_cd_local.py
+#### Endpoints disponíveis
+- **GET /** - Status da API
+- **GET /health** - Health check
+- **POST /analyze/** - Análise de logs com upload de arquivos
+- **GET /api-info** - Informações da API
+- **GET /docs** - Documentação interativa (Swagger UI)
+- **GET /redoc** - Documentação ReDoc
+
+#### Exemplo de uso da API
+```bash
+# Testar status
+curl http://127.0.0.1:8000/
+
+# Analisar logs
+curl -X POST "http://127.0.0.1:8000/analyze/" \
+  -F "firewall_log=@firewall.csv" \
+  -F "auth_log=@auth.csv"
+
+# Ou usar o cliente de exemplo
+python examples/api_client_example.py --analyze data/sample_firewall.csv
+```
+
+### 🐳 Docker
+
+#### Executar com Docker Compose
+```bash
+# Iniciar serviços
+docker-compose up -d
+
+# Verificar logs
+docker-compose logs -f
+
+# Parar serviços
+docker-compose down
+```
+
+#### Construir imagem personalizada
+```bash
+# Construir imagem da API
+docker build -f Dockerfile.api -t log-analyzer-api .
+
+# Executar container
+docker run -p 8000:8000 log-analyzer-api
 ```
 
 ## 🛠️ Desenvolvimento
 
+### Comandos Make úteis
 ```bash
 # Instalar dependências de desenvolvimento
-pip install -r requirements-dev.txt
+make install-dev
 
-# Formatação automática
-make format
+# Executar todos os testes
+make test
 
-# Verificação de qualidade
+# Testes com cobertura
+make test-cov
+
+# Verificação de qualidade de código
 make lint
+make format
+make security
 
-# Executar todos os checks
-make ci
+# API - comandos específicos
+make api-dev          # Servidor de desenvolvimento
+make api-test         # Testes da API
+make api-demo         # Demo completa
+make api-docs         # Informações sobre documentação
 ```
 
-## 🤝 Contribuição
+### CI/CD Pipeline
 
-1. Fork o repositório
-2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)
-3. Faça commit das mudanças (`git commit -am 'Adiciona nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/nova-funcionalidade`)
+O projeto inclui pipeline completo de CI/CD com:
+- **Testes automatizados** em múltiplas versões Python
+- **Análise de qualidade** (Black, isort, flake8, mypy)
+- **Verificação de segurança** (Bandit, Safety)
+- **Build Docker** automatizado
+- **Verificação de dependências**
+- **Deploy automático** com tags
+
+## 🔧 Arquitetura
+
+```
+log-analyzer/
+├── src/log_analyzer/        # Código principal
+│   ├── core.py             # Analisador principal
+│   ├── geographic.py       # Análise geográfica
+│   ├── api.py              # API REST FastAPI
+│   └── utils.py            # Utilitários
+├── tests/                  # Testes
+│   ├── test_api.py         # Testes da API
+│   └── test_*.py          # Demais testes
+├── examples/               # Exemplos de uso
+│   └── api_client_example.py
+├── docker-compose.yml      # Orquestração
+├── Dockerfile.api         # Container da API
+├── run_api.py            # Script para executar API
+└── Makefile              # Comandos automatizados
+```
+
+## 📊 Recursos da API
+
+### Upload de Arquivos
+- **Formatos suportados**: CSV, JSON
+- **Tipos de logs**: Firewall, Autenticação
+- **Tamanho máximo**: 100MB por arquivo
+- **Processamento**: Análise em tempo real
+
+### Análises Disponíveis
+- **Detecção de força bruta**: Tentativas repetidas de login
+- **Varredura de porta**: Identificação de port scanning
+- **Análise geográfica**: Localização de IPs suspeitos
+- **Classificação de risco**: Alto, médio e baixo risco
+- **Estatísticas detalhadas**: Resumos quantitativos
+
+### Respostas JSON
+```json
+{
+  "summary": {
+    "files_processed": 2,
+    "total_events": 1000,
+    "analysis_completed": true
+  },
+  "brute_force_attacks": [...],
+  "geographic_analysis": [...],
+  "top_suspicious_ips": [...],
+  "alerts": {
+    "high_risk": [...],
+    "medium_risk": [...],
+    "low_risk": [...]
+  }
+}
+```
+
+## 📚 Documentação
+
+- **Swagger UI**: `http://127.0.0.1:8000/docs`
+- **ReDoc**: `http://127.0.0.1:8000/redoc`
+- **Exemplos de uso**: Diretório `examples/`
+- **Testes**: `python tests/test_api.py --url http://127.0.0.1:8000`
+
+## 🧪 Testes
+
+```bash
+# Testes da aplicação
+make test
+
+# Testes específicos da API
+python tests/test_api.py
+
+# Demo completa
+make api-demo
+```
+
+## 🤝 Contribuições
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
-## 👨‍💻 Desenvolvedor
+## 👨‍💻 Autor
 
 **Henri Lopes**
-- 🐙 GitHub: [@henrilopes1](https://github.com/henrilopes1)
-- � Contato: [henri@example.com]
+- GitHub: [@henrilopes1](https://github.com/henrilopes1)
+- LinkedIn: [Henri Lopes](https://linkedin.com/in/henri-lopes)
 
 ---
 
-**⭐ Se este projeto foi útil para você, considere dar uma estrela no repositório!**
+<div align="center">
+  <strong>🛡️ Mantenha seus logs seguros com Log Analyzer! 🛡️</strong>
+</div>

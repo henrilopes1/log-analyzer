@@ -49,6 +49,31 @@ quality: ## Run all quality checks
 	make security
 	make test-cov
 
+# API related commands
+api-dev: ## Start API server in development mode
+	$(PYTHON) run_api.py --reload --debug
+
+api-prod: ## Start API server in production mode
+	$(PYTHON) run_api.py --prod --host 0.0.0.0
+
+api-test: ## Test API endpoints
+	$(PYTHON) examples/api_client_example.py --test-status
+
+api-demo: ## Create sample data and run API demo
+	$(PYTHON) examples/api_client_example.py --create-samples
+	$(PYTHON) examples/api_client_example.py --analyze data/sample_firewall.csv data/sample_auth.csv
+
+api-info: ## Show API information
+	$(PYTHON) examples/api_client_example.py --info
+
+api-install: ## Install API dependencies
+	$(PIP) install fastapi uvicorn[standard] requests
+
+api-docs: ## Open API documentation in browser
+	@echo "API Documentation available at:"
+	@echo "  Swagger UI: http://127.0.0.1:8000/docs"
+	@echo "  ReDoc:      http://127.0.0.1:8000/redoc"
+
 pre-commit: ## Run pre-commit hooks
 	pre-commit run --all-files
 
