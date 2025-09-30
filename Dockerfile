@@ -1,11 +1,13 @@
 # Multi-stage build para otimizar tamanho da imagem
-FROM python:3.11-slim as builder
+FROM python:3.11-slim AS builder
 
-# Instalar dependências do sistema necessárias para build
+# Instalar dependências do sistema e criar usuário
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -r appuser \
+    && useradd -r -g appuser appuser
 
 # Definir diretório de trabalho
 WORKDIR /app
@@ -23,13 +25,12 @@ RUN pip install --upgrade pip && \
 # Estágio final da imagem
 FROM python:3.11-slim
 
-# Criar usuário não-root para segurança
-RUN groupadd -r appuser && useradd -r -g appuser appuser
-
-# Instalar apenas dependências mínimas de runtime
-RUN apt-get update && apt-get install -y \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Criar usuário e instalar dependências runtime
+RUN groupadd -r appuser && \
+    useradd -r -g appuser appuser && \
+    apt-get update && \
+    apt-get install -y curl && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copiar ambiente virtual do estágio builder
 COPY --from=builder /opt/venv /opt/venv

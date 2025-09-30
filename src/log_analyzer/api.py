@@ -1,347 +1,413 @@
 """
-API REST para o Log Analyzer
+API REST para o Log Analyzer - Versão Refatorada
 
-Esta API fornece endpoints para análise de logs de segurança cibernética,
-permitindo upload de arquivos de logs e retornando análises detalhadas
-sobre ameaças detectadas, ataques de força bruta e varreduras de porta.
+Esta API fornece endpoints para análise de logs de segurança cibernética.
+Aplicando boas práticas de programação e organização de código.
 """
 
 import io
 import json
 import logging
+import time
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Any
 
 import pandas as pd
-from fastapi import FastAPI, File, HTTPException, UploadFile
-from fastapi.responses import JSONResponse
 
-from .core import LogAnalyzer
-
-# Configurar logging para não interferir com a saída da API
-logging.basicConfig(level=logging.WARNING)
-
-# Criar instância da aplicação FastAPI
-app = FastAPI(
-    title="Log Analyzer API",
-    description="API REST para análise de logs de segurança cibernética",
-    version="1.0.0",
-    docs_url="/docs",
-    redoc_url="/redoc"
+# Configuração de logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
+logger = logging.getLogger(__name__)
+
+# Constantes
+API_VERSION = "1.0.0"
+API_NAME = "Log Analyzer API"
+MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB
+SUPPORTED_FORMATS = [".csv", ".json"]
+
+# Importações condicionais para robustez
+try:
+    from fastapi import FastAPI, File, HTTPException, UploadFile
+    from fastapi.responses import JSONResponse
+    from fastapi.middleware.cors import CORSMiddleware
+    FASTAPI_AVAILABLE = True
+except ImportError:
+    logger.warning("FastAPI não disponível")
+    FASTAPI_AVAILABLE = False
+
+try:
+    from .core import LogAnalyzer
+    CORE_AVAILABLE = True
+except ImportError:
+    logger.error("LogAnalyzer core não disponível")
+    CORE_AVAILABLE = False
 
 
-@app.get("/")
-async def status() -> Dict[str, str]:
-    """
-    Endpoint de status da API.
+class FileHandler:
+    """Manipula operações de arquivo de forma segura."""
     
-    Returns:
-        Dict[str, str]: Status da API
-    """
-    return {"status": "Log Analyzer API is running"}
-
-
-@app.get("/health")
-async def health_check() -> Dict[str, Any]:
-    """
-    Endpoint de verificação de saúde da API.
-    
-    Returns:
-        Dict[str, Any]: Informações sobre a saúde da API
-    """
-    return {
-        "status": "healthy",
-        "version": "1.0.0",
-        "service": "log-analyzer-api"
-    }
-
-
-def _process_uploaded_file(file: UploadFile) -> pd.DataFrame:
-    """
-    Processa um arquivo enviado e converte para DataFrame.
-    
-    Args:
-        file: Arquivo enviado via upload
+    @staticmethod
+    def validate_file(file: UploadFile) -> None:
+        """Valida arquivo enviado."""
+        if not file.filename:
+            raise HTTPException(status_code=400, detail="Nome do arquivo obrigatório")
         
-    Returns:
-        pd.DataFrame: Dados do arquivo como DataFrame
-        
-    Raises:
-        HTTPException: Se o arquivo não puder ser processado
-    """
-    try:
-        # Ler conteúdo do arquivo
-        content = file.file.read()
-        
-        # Detectar tipo de arquivo pela extensão
-        if file.filename.lower().endswith('.csv'):
-            df = pd.read_csv(io.BytesIO(content))
-        elif file.filename.lower().endswith('.json'):
-            data = json.loads(content.decode('utf-8'))
-            df = pd.DataFrame(data)
-        else:
+        extension = "." + file.filename.split(".")[-1].lower()
+        if extension not in SUPPORTED_FORMATS:
             raise HTTPException(
                 status_code=400,
-                detail=f"Formato de arquivo não suportado: {file.filename}"
+                detail=f"Formato não suportado: {extension}"
             )
+    
+    @staticmethod
+    def process_file(file: UploadFile) -> pd.DataFrame:
+        """Processa arquivo e retorna DataFrame."""
+        FileHandler.validate_file(file)
+        
+        try:
+            content = file.file.read()
             
-        return df
-        
-    except Exception as e:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Erro ao processar arquivo {file.filename}: {str(e)}"
-        )
+            if len(content) > MAX_FILE_SIZE:
+                raise HTTPException(status_code=413, detail="Arquivo muito grande")
+            
+            extension = "." + file.filename.split(".")[-1].lower()
+            
+            if extension == ".csv":
+                return FileHandler._process_csv(content)
+            elif extension == ".json":
+                return FileHandler._process_json(content)
+            
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"Erro processar arquivo {file.filename}: {e}")
+            raise HTTPException(status_code=400, detail=str(e)) from e
+    
+    @staticmethod
+    def _process_csv(content: bytes) -> pd.DataFrame:
+        """Processa conteúdo CSV."""
+        for encoding in ["utf-8", "utf-8-sig", "latin1"]:
+            try:
+                decoded = content.decode(encoding)
+                return pd.read_csv(io.StringIO(decoded))
+            except (UnicodeDecodeError, pd.errors.EmptyDataError):
+                continue
+        raise ValueError("Não foi possível processar CSV")
+    
+    @staticmethod
+    def _process_json(content: bytes) -> pd.DataFrame:
+        """Processa conteúdo JSON."""
+        for encoding in ["utf-8", "utf-8-sig"]:
+            try:
+                decoded = content.decode(encoding)
+                data = json.loads(decoded)
+                
+                if isinstance(data, list):
+                    return pd.DataFrame(data)
+                elif isinstance(data, dict):
+                    return pd.DataFrame([data])
+                else:
+                    raise ValueError("JSON deve ser lista ou objeto")
+            except (UnicodeDecodeError, json.JSONDecodeError):
+                continue
+        raise ValueError("Não foi possível processar JSON")
 
 
-def _safe_analyze_method(analyzer: LogAnalyzer, method_name: str, *args, **kwargs) -> Any:
-    """
-    Executa um método de análise de forma segura, capturando erros.
+class AnalysisService:
+    """Serviço de análise de logs."""
     
-    Args:
-        analyzer: Instância do LogAnalyzer
-        method_name: Nome do método a ser executado
-        *args: Argumentos posicionais
-        **kwargs: Argumentos nomeados
+    def __init__(self):
+        """Inicializa o serviço."""
+        if not CORE_AVAILABLE:
+            raise RuntimeError("LogAnalyzer core não disponível")
+        self.analyzer = LogAnalyzer()
+    
+    def analyze_files(
+        self, 
+        firewall_log: Optional[UploadFile], 
+        auth_log: Optional[UploadFile]
+    ) -> Dict[str, Any]:
+        """Analisa arquivos de log enviados."""
+        start_time = time.time()
         
-    Returns:
-        Any: Resultado do método ou None se houver erro
-    """
-    try:
-        method = getattr(analyzer, method_name)
-        return method(*args, **kwargs)
-    except Exception as e:
-        logging.warning(f"Erro ao executar {method_name}: {str(e)}")
-        return None
-
-
-def _dataframe_to_dict(df: pd.DataFrame) -> List[Dict]:
-    """
-    Converte DataFrame para lista de dicionários para serialização JSON.
-    
-    Args:
-        df: DataFrame a ser convertido
+        # Processar arquivos
+        file_info = self._process_files(firewall_log, auth_log)
         
-    Returns:
-        List[Dict]: Lista de registros como dicionários
-    """
-    if df is None or df.empty:
-        return []
-    
-    try:
-        return df.to_dict('records')
-    except Exception:
-        return []
-
-
-@app.post("/analyze/")
-async def analyze_logs(
-    firewall_log: Optional[UploadFile] = File(None),
-    auth_log: Optional[UploadFile] = File(None)
-) -> JSONResponse:
-    """
-    Endpoint principal para análise de logs de segurança.
-    
-    Este endpoint aceita uploads de arquivos de logs de firewall e/ou autenticação,
-    executa análises abrangentes e retorna resultados consolidados sobre ameaças
-    detectadas, ataques de força bruta, varreduras de porta e IPs suspeitos.
-    
-    Args:
-        firewall_log: Arquivo de log do firewall (CSV ou JSON) - opcional
-        auth_log: Arquivo de log de autenticação (CSV ou JSON) - opcional
+        # Executar análise
+        results = self._execute_analysis()
         
-    Returns:
-        JSONResponse: Resultados consolidados da análise em formato JSON
-        
-    Raises:
-        HTTPException: Se nenhum arquivo for enviado ou se houver erro no processamento
-    """
-    # Verificar se pelo menos um arquivo foi enviado
-    if not firewall_log and not auth_log:
-        raise HTTPException(
-            status_code=400,
-            detail="Pelo menos um arquivo de log deve ser enviado (firewall_log ou auth_log)"
-        )
+        # Preparar resposta
+        return self._prepare_response(results, file_info, start_time, firewall_log, auth_log)
     
-    try:
-        # Criar instância do analisador
-        analyzer = LogAnalyzer()
+    def _process_files(
+        self, 
+        firewall_log: Optional[UploadFile], 
+        auth_log: Optional[UploadFile]
+    ) -> Dict[str, int]:
+        """Processa arquivos enviados."""
+        files_processed = 0
+        total_events = 0
         
-        # Resultados consolidados
+        if firewall_log:
+            df = FileHandler.process_file(firewall_log)
+            self.analyzer.data = df
+            files_processed += 1
+            total_events += len(df)
+        
+        if auth_log:
+            df = FileHandler.process_file(auth_log)
+            if self.analyzer.data is not None:
+                self.analyzer.data = pd.concat([self.analyzer.data, df], ignore_index=True)
+            else:
+                self.analyzer.data = df
+            files_processed += 1
+            total_events += len(df)
+        
+        return {"files_processed": files_processed, "total_events": total_events}
+    
+    def _execute_analysis(self) -> Dict[str, Any]:
+        """Executa análises nos dados."""
         results = {
-            "summary": {
-                "files_processed": 0,
-                "total_events": 0,
-                "analysis_completed": True
-            },
-            "firewall_analysis": {},
+            "firewall_analysis": [],
             "brute_force_attacks": [],
-            "authentication_failures": [],
-            "geographic_analysis": [],
             "statistics": {},
             "top_suspicious_ips": [],
-            "alerts": {
-                "high_risk": [],
-                "medium_risk": [],
-                "low_risk": []
+            "alerts": {"high_risk": [], "medium_risk": [], "low_risk": []},
+            "geographic_analysis": []
+        }
+        
+        if self.analyzer.data is None or self.analyzer.data.empty:
+            return results
+        
+        # Análises básicas
+        results["firewall_analysis"] = self._safe_analysis("analyze_firewall_logs", self.analyzer.data)
+        results["brute_force_attacks"] = self._safe_analysis("analyze_brute_force")
+        results["statistics"] = self._safe_analysis("generate_statistics") or {}
+        
+        # IPs suspeitos
+        results["top_suspicious_ips"] = self._extract_suspicious_ips()
+        results["alerts"] = self._classify_alerts(results["top_suspicious_ips"])
+        
+        # Análise geográfica
+        results["geographic_analysis"] = self._geographic_analysis()
+        
+        return results
+    
+    def _safe_analysis(self, method_name: str, *args) -> Any:
+        """Executa análise de forma segura."""
+        try:
+            method = getattr(self.analyzer, method_name, None)
+            if method is None:
+                return None
+            
+            result = method(*args)
+            
+            # Converter DataFrame para dict se necessário
+            if isinstance(result, pd.DataFrame):
+                return result.to_dict("records") if not result.empty else []
+            
+            return result
+        except Exception as e:
+            logger.warning(f"Erro em {method_name}: {e}")
+            return None
+    
+    def _extract_suspicious_ips(self) -> List[Dict[str, Any]]:
+        """Extrai IPs suspeitos."""
+        if "source_ip" not in self.analyzer.data.columns:
+            return []
+        
+        try:
+            ip_counts = self.analyzer.data["source_ip"].value_counts().head(10)
+            return [
+                {
+                    "ip": ip,
+                    "occurrences": int(count),
+                    "risk_level": self._risk_level(count)
+                }
+                for ip, count in ip_counts.items()
+            ]
+        except Exception as e:
+            logger.warning(f"Erro extrair IPs: {e}")
+            return []
+    
+    def _risk_level(self, count: int) -> str:
+        """Classifica nível de risco."""
+        if count >= 10:
+            return "high"
+        elif count >= 5:
+            return "medium"
+        return "low"
+    
+    def _classify_alerts(self, suspicious_ips: List[Dict[str, Any]]) -> Dict[str, List]:
+        """Classifica alertas por risco."""
+        alerts = {"high_risk": [], "medium_risk": [], "low_risk": []}
+        
+        for ip_data in suspicious_ips:
+            risk = ip_data.get("risk_level", "low")
+            if risk in alerts:
+                alerts[risk].append(ip_data)
+        
+        return alerts
+    
+    def _geographic_analysis(self) -> List[Dict[str, Any]]:
+        """Análise geográfica."""
+        try:
+            from .geographic import GeographicAnalyzer
+            
+            geo = GeographicAnalyzer()
+            unique_ips = []
+            
+            if "source_ip" in self.analyzer.data.columns:
+                unique_ips = self.analyzer.data["source_ip"].dropna().unique().tolist()
+            
+            if unique_ips:
+                return geo.analyze_ips(unique_ips[:10])
+            
+            return []
+        except Exception as e:
+            logger.warning(f"Análise geográfica falhou: {e}")
+            return []
+    
+    def _prepare_response(
+        self,
+        results: Dict[str, Any],
+        file_info: Dict[str, int],
+        start_time: float,
+        firewall_log: Optional[UploadFile],
+        auth_log: Optional[UploadFile]
+    ) -> Dict[str, Any]:
+        """Prepara resposta final."""
+        processing_time = time.time() - start_time
+        
+        return {
+            "summary": {
+                **file_info,
+                "analysis_completed": True,
+                "processing_time_seconds": processing_time
+            },
+            **results,
+            "metadata": {
+                "api_version": API_VERSION,
+                "analyzer_version": "1.0.0",
+                "files_uploaded": [
+                    f.filename for f in [firewall_log, auth_log] if f is not None
+                ],
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
         }
-        
-        # Processar arquivo de firewall se fornecido
-        if firewall_log:
-            try:
-                firewall_df = _process_uploaded_file(firewall_log)
-                analyzer.data = firewall_df
-                results["summary"]["files_processed"] += 1
-                results["summary"]["total_events"] += len(firewall_df)
-                
-                # Análise de logs de firewall
-                firewall_results = _safe_analyze_method(analyzer, 'analyze_firewall_logs', firewall_df)
-                if firewall_results:
-                    results["firewall_analysis"] = _dataframe_to_dict(firewall_results)
-                    
-            except Exception as e:
-                results["firewall_analysis"] = {"error": f"Erro ao processar firewall: {str(e)}"}
-        
-        # Processar arquivo de autenticação se fornecido
-        if auth_log:
-            try:
-                auth_df = _process_uploaded_file(auth_log)
-                
-                # Se já temos dados do firewall, combinar; senão, usar apenas auth
-                if analyzer.data is not None:
-                    # Combinar dados se ambos os arquivos foram fornecidos
-                    analyzer.data = pd.concat([analyzer.data, auth_df], ignore_index=True, sort=False)
-                else:
-                    analyzer.data = auth_df
-                    
-                results["summary"]["files_processed"] += 1
-                results["summary"]["total_events"] += len(auth_df)
-                
-            except Exception as e:
-                results["authentication_failures"] = {"error": f"Erro ao processar auth: {str(e)}"}
-        
-        # Executar análises se temos dados
-        if analyzer.data is not None and not analyzer.data.empty:
-            
-            # Análise de força bruta
-            brute_force_results = _safe_analyze_method(analyzer, 'analyze_brute_force')
-            if brute_force_results is not None:
-                results["brute_force_attacks"] = _dataframe_to_dict(brute_force_results)
-            
-            # Detecção de força bruta (método alternativo)
-            try:
-                analyzer.detect_brute_force(analyzer.data)
-                if hasattr(analyzer, 'brute_force_attempts') and analyzer.brute_force_attempts:
-                    results["brute_force_attacks"].extend(analyzer.brute_force_attempts)
-            except Exception:
-                pass
-            
-            # Gerar estatísticas
-            stats = _safe_analyze_method(analyzer, 'generate_statistics')
-            if stats:
-                results["statistics"] = stats
-            
-            # Análise geográfica (se disponível)
-            try:
-                from .geographic import GeographicAnalyzer
-                geo_analyzer = GeographicAnalyzer()
-                
-                # Extrair IPs únicos
-                unique_ips = []
-                if 'source_ip' in analyzer.data.columns:
-                    unique_ips.extend(analyzer.data['source_ip'].dropna().unique().tolist())
-                
-                if unique_ips:
-                    geo_results = geo_analyzer.analyze_ips(unique_ips[:10])  # Limitar a 10 IPs
-                    results["geographic_analysis"] = geo_results
-                    
-            except Exception as e:
-                results["geographic_analysis"] = {"error": f"Análise geográfica indisponível: {str(e)}"}
-            
-            # Identificar IPs mais suspeitos
-            if 'source_ip' in analyzer.data.columns:
-                suspicious_ips = (analyzer.data['source_ip']
-                                .value_counts()
-                                .head(10)
-                                .to_dict())
-                
-                results["top_suspicious_ips"] = [
-                    {"ip": ip, "occurrences": count} 
-                    for ip, count in suspicious_ips.items()
-                ]
-                
-                # Classificar por nível de risco
-                for ip, count in suspicious_ips.items():
-                    risk_entry = {"ip": ip, "occurrences": count}
-                    
-                    if count >= 10:
-                        results["alerts"]["high_risk"].append(risk_entry)
-                    elif count >= 5:
-                        results["alerts"]["medium_risk"].append(risk_entry)
-                    else:
-                        results["alerts"]["low_risk"].append(risk_entry)
-        
-        # Adicionar metadados da análise
-        results["metadata"] = {
-            "api_version": "1.0.0",
-            "analyzer_version": getattr(analyzer, 'version', '1.0.0'),
-            "files_uploaded": [
-                f.filename for f in [firewall_log, auth_log] if f is not None
+
+
+# Criar aplicação FastAPI
+if FASTAPI_AVAILABLE:
+    app = FastAPI(
+        title=API_NAME,
+        description="API REST para análise de logs de segurança cibernética",
+        version=API_VERSION,
+        docs_url="/docs",
+        redoc_url="/redoc"
+    )
+    
+    # CORS
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    
+    
+    @app.get("/")
+    async def status() -> Dict[str, str]:
+        """Status da API."""
+        return {
+            "status": "Log Analyzer API is running",
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+    
+    
+    @app.get("/health")
+    async def health() -> Dict[str, Any]:
+        """Health check."""
+        return {
+            "status": "healthy",
+            "version": API_VERSION,
+            "service": "log-analyzer-api",
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+    
+    
+    @app.get("/api-info")
+    async def api_info() -> Dict[str, Any]:
+        """Informações da API."""
+        return {
+            "name": API_NAME,
+            "version": API_VERSION,
+            "description": "API REST para análise de logs de segurança",
+            "endpoints": {
+                "/": "Status da API",
+                "/health": "Health check",
+                "/analyze/": "Análise de logs",
+                "/api-info": "Informações da API"
+            },
+            "supported_formats": ["CSV", "JSON"],
+            "features": [
+                "Detecção de força bruta",
+                "Análise geográfica",
+                "Classificação de riscos"
             ]
         }
-        
-        return JSONResponse(
-            content=results,
-            status_code=200
-        )
-        
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Erro interno durante a análise: {str(e)}"
-        )
-
-
-@app.get("/api-info")
-async def api_info() -> Dict[str, Any]:
-    """
-    Informações sobre a API e seus endpoints.
     
-    Returns:
-        Dict[str, Any]: Informações detalhadas sobre a API
-    """
-    return {
-        "name": "Log Analyzer API",
-        "version": "1.0.0",
-        "description": "API REST para análise de logs de segurança cibernética",
-        "endpoints": {
-            "/": "Status da API",
-            "/health": "Verificação de saúde",
-            "/analyze/": "Análise de logs (POST com upload de arquivos)",
-            "/api-info": "Informações sobre a API",
-            "/docs": "Documentação interativa (Swagger)",
-            "/redoc": "Documentação alternativa (ReDoc)"
-        },
-        "supported_formats": ["CSV", "JSON"],
-        "supported_log_types": ["firewall", "authentication"],
-        "features": [
-            "Detecção de ataques de força bruta",
-            "Análise de varreduras de porta",
-            "Análise geográfica de IPs",
-            "Classificação de riscos",
-            "Estatísticas detalhadas",
-            "Identificação de IPs suspeitos"
-        ]
-    }
+    
+    @app.post("/analyze/")
+    async def analyze_logs(
+        firewall_log: Optional[UploadFile] = File(None),
+        auth_log: Optional[UploadFile] = File(None)
+    ) -> JSONResponse:
+        """
+        Análise de logs de segurança.
+        
+        Aceita uploads de arquivos CSV ou JSON para análise.
+        """
+        if not firewall_log and not auth_log:
+            raise HTTPException(
+                status_code=400,
+                detail="Pelo menos um arquivo deve ser enviado"
+            )
+        
+        try:
+            service = AnalysisService()
+            results = service.analyze_files(firewall_log, auth_log)
+            return JSONResponse(content=results, status_code=200)
+            
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"Erro na análise: {e}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Erro interno: {str(e)}"
+            ) from e
+
+else:
+    app = None
 
 
+# Ponto de entrada principal
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(
-        "log_analyzer.api:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
-    )
+    if FASTAPI_AVAILABLE:
+        try:
+            import uvicorn
+            uvicorn.run(
+                "log_analyzer.api:app",
+                host="0.0.0.0",
+                port=8000,
+                reload=True,
+                log_level="info"
+            )
+        except ImportError:
+            logger.error("Uvicorn não disponível")
+    else:
+        logger.error("FastAPI não disponível - não é possível executar API")

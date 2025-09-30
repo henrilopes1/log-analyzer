@@ -127,7 +127,7 @@ def run_linting():
     
     # Comandos opcionais
     for cmd, desc in optional_commands:
-        success, output = run_command(cmd, f"{desc} (opcional)")
+        success, _ = run_command(cmd, f"{desc} (opcional)")
         if not success:
             console.print(f"[yellow]Warning:[/yellow] {desc} falhou, mas continuando...")
     
@@ -185,7 +185,6 @@ def generate_report(results: dict):
     for step, success in results.items():
         status_icon = "✅" if success else "❌"
         status_text = "[green]PASSOU[/green]" if success else "[red]FALHOU[/red]"
-        result = "OK" if success else "ERRO"
         
         table.add_row(step, status_icon, status_text)
     

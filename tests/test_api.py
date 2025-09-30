@@ -278,13 +278,13 @@ class APITester:
             self.cleanup()
         
         print("=" * 50)
-        print(f"📊 Resultados dos testes:")
+        print("📊 Resultados dos testes:")
         print(f"   Total: {self.results['total']}")
         print(f"   ✅ Passou: {self.results['passed']}")
         print(f"   ❌ Falhou: {self.results['failed']}")
         
         if self.results['errors']:
-            print(f"\n📋 Erros encontrados:")
+            print("📋 Erros encontrados:")
             for error in self.results['errors']:
                 print(f"   • {error}")
         
