@@ -45,6 +45,28 @@ LOGGING_CONFIG = {
     "level": os.getenv("LOG_LEVEL", "INFO"),
     "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     "file": LOGS_DIR / "app.log" if LOGS_DIR.exists() else None,
+    "max_bytes": 10 * 1024 * 1024,  # 10MB
+    "backup_count": 5,
+    "console": True,
+}
+
+# Configurações de performance
+PERFORMANCE_CONFIG = {
+    "max_workers": os.cpu_count() or 4,
+    "chunk_size": 10000,
+    "timeout_seconds": 300,
+    "cache_size": 1000,
+}
+
+# Configurações de monitoramento
+MONITORING_CONFIG = {
+    "enable_metrics": True,
+    "health_check_interval": 30,
+    "alert_thresholds": {
+        "cpu_percent": 80,
+        "memory_percent": 85,
+        "response_time_ms": 5000,
+    },
 }
 
 # Mensagens de erro padrão
@@ -72,6 +94,8 @@ CONFIG = {
     "analysis": ANALYSIS_CONFIG,
     "logging": LOGGING_CONFIG,
     "security": SECURITY_CONFIG,
+    "performance": PERFORMANCE_CONFIG,
+    "monitoring": MONITORING_CONFIG,
     "errors": ERROR_MESSAGES,
 }
 

@@ -4,7 +4,7 @@ Version: 1.0.0
 Summary: Advanced log analysis tool for cybersecurity professionals
 Author-email: Henri Lopes <henri@example.com>
 Maintainer-email: Henri Lopes <henri@example.com>
-License: MIT
+License-Expression: MIT
 Project-URL: Homepage, https://github.com/henrilopes1/log-analyzer
 Project-URL: Documentation, https://log-analyzer.readthedocs.io
 Project-URL: Repository, https://github.com/henrilopes1/log-analyzer
@@ -14,7 +14,6 @@ Keywords: cybersecurity,log-analysis,security,forensics,threat-detection
 Classifier: Development Status :: 4 - Beta
 Classifier: Intended Audience :: Information Technology
 Classifier: Intended Audience :: System Administrators
-Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
 Classifier: Programming Language :: Python :: 3
 Classifier: Programming Language :: Python :: 3.9
