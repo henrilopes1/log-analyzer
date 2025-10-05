@@ -17,12 +17,8 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "slow: marca testes que são lentos para executar"
     )
-    config.addinivalue_line(
-        "markers", "integration: marca testes de integração"
-    )
-    config.addinivalue_line(
-        "markers", "unit: marca testes unitários"
-    )
+    config.addinivalue_line("markers", "integration: marca testes de integração")
+    config.addinivalue_line("markers", "unit: marca testes unitários")
 
 
 @pytest.fixture(scope="session")
@@ -35,11 +31,10 @@ def api_base_url():
 def api_client(api_base_url):
     """Fixture que retorna um cliente HTTP configurado para a API."""
     session = requests.Session()
-    session.headers.update({
-        "User-Agent": "pytest-log-analyzer/1.0.0",
-        "Accept": "application/json"
-    })
-    
+    session.headers.update(
+        {"User-Agent": "pytest-log-analyzer/1.0.0", "Accept": "application/json"}
+    )
+
     # Verificar se a API está acessível
     try:
         response = session.get(f"{api_base_url}/health", timeout=5)
@@ -47,7 +42,7 @@ def api_client(api_base_url):
             pytest.skip("API não está disponível para testes")
     except RequestException:
         pytest.skip("API não está acessível para testes")
-    
+
     return session
 
 
@@ -81,7 +76,7 @@ def pytest_collection_modifyitems(config, items):
         # Marcar testes que fazem upload de arquivo como lentos
         if "upload" in item.name.lower() or "large_file" in item.name.lower():
             item.add_marker(pytest.mark.slow)
-        
+
         # Marcar testes de API como integração
         if item.cls and "API" in item.cls.__name__:
             item.add_marker(pytest.mark.integration)

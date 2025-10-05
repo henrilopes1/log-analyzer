@@ -19,12 +19,16 @@ import pandas as pd
 
 # Configuração de logging avançada
 logging.basicConfig(
-    level=logging.INFO, 
+    level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler("logs/api.log", mode="a") if os.path.exists("logs") else logging.NullHandler()
-    ]
+        (
+            logging.FileHandler("logs/api.log", mode="a")
+            if os.path.exists("logs")
+            else logging.NullHandler()
+        ),
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -48,6 +52,7 @@ except ImportError as e:
 
 try:
     import psutil
+
     PSUTIL_AVAILABLE = True
 except ImportError:
     logger.warning("psutil não disponível")
@@ -64,67 +69,70 @@ except ImportError:
 
 class PerformanceMonitor:
     """Monitor de performance e métricas da API."""
-    
+
     def __init__(self):
         self.request_count = 0
         self.total_response_time = 0
         self.start_time = time.time()
-    
+
     def record_request(self, response_time: float):
         """Registra uma requisição."""
         self.request_count += 1
         self.total_response_time += response_time
-    
+
     def get_metrics(self) -> Dict[str, Any]:
         """Retorna métricas atuais."""
         uptime = time.time() - self.start_time
         avg_response_time = (
-            self.total_response_time / self.request_count 
-            if self.request_count > 0 else 0
+            self.total_response_time / self.request_count
+            if self.request_count > 0
+            else 0
         )
-        
+
         metrics = {
             "uptime_seconds": uptime,
             "request_count": self.request_count,
             "avg_response_time_ms": avg_response_time * 1000,
             "requests_per_second": self.request_count / uptime if uptime > 0 else 0,
         }
-        
+
         # Adicionar métricas do sistema se psutil disponível
         if PSUTIL_AVAILABLE:
-            metrics.update({
-                "cpu_percent": psutil.cpu_percent(),
-                "memory_percent": psutil.virtual_memory().percent,
-                "disk_usage_percent": psutil.disk_usage('/').percent,
-            })
-        
+            metrics.update(
+                {
+                    "cpu_percent": psutil.cpu_percent(),
+                    "memory_percent": psutil.virtual_memory().percent,
+                    "disk_usage_percent": psutil.disk_usage("/").percent,
+                }
+            )
+
         return metrics
 
 
 class MetricsMiddleware(BaseHTTPMiddleware if FASTAPI_AVAILABLE else object):
     """Middleware para coleta de métricas."""
-    
+
     def __init__(self, app, monitor: PerformanceMonitor):
         if FASTAPI_AVAILABLE:
             super().__init__(app)
         self.monitor = monitor
-    
+
     async def dispatch(self, request: "Request", call_next):
         """Processa requisição e coleta métricas."""
         if not FASTAPI_AVAILABLE:
             return await call_next(request)
-            
+
         start_time = time.time()
-        
+
         try:
             response = await call_next(request)
             response_time = time.time() - start_time
             self.monitor.record_request(response_time)
-            
+
             # Adicionar headers de performance
             response.headers["X-Response-Time"] = f"{response_time:.3f}s"
             response.headers["X-Request-ID"] = str(self.monitor.request_count)
-            
+
             return response
         except Exception as e:
             response_time = time.time() - start_time
@@ -410,7 +418,7 @@ if FASTAPI_AVAILABLE:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    
+
     # Middleware de métricas
     app.add_middleware(MetricsMiddleware, monitor=performance_monitor)
 
@@ -437,22 +445,24 @@ if FASTAPI_AVAILABLE:
                 "psutil": "available" if PSUTIL_AVAILABLE else "unavailable",
             },
         }
-        
+
         # Verificar saúde do sistema
         if PSUTIL_AVAILABLE:
             cpu_percent = psutil.cpu_percent()
             memory_percent = psutil.virtual_memory().percent
-            
+
             if cpu_percent > 90 or memory_percent > 90:
                 health_status["status"] = "degraded"
                 health_status["warnings"] = []
                 if cpu_percent > 90:
                     health_status["warnings"].append(f"High CPU usage: {cpu_percent}%")
                 if memory_percent > 90:
-                    health_status["warnings"].append(f"High memory usage: {memory_percent}%")
-        
+                    health_status["warnings"].append(
+                        f"High memory usage: {memory_percent}%"
+                    )
+
         return health_status
-    
+
     @app.get("/metrics")
     async def metrics() -> Dict[str, Any]:
         """Métricas de performance da API."""

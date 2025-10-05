@@ -18,20 +18,20 @@ def check_dependencies():
     """Verificar se as dependências necessárias estão instaladas."""
     required_packages = ["pytest", "requests"]
     missing_packages = []
-    
+
     for package in required_packages:
         try:
             __import__(package)
         except ImportError:
             missing_packages.append(package)
-    
+
     if missing_packages:
         print("❌ Dependências faltando:")
         for package in missing_packages:
             print(f"   • {package}")
         print("\n💡 Instale com: pip install pytest requests")
         return False
-    
+
     return True
 
 
@@ -39,6 +39,7 @@ def check_api_availability(url: str) -> bool:
     """Verificar se a API está rodando e acessível."""
     try:
         import requests
+
         response = requests.get(f"{url}/health", timeout=5)
         return response.status_code == 200
     except Exception:
@@ -70,11 +71,13 @@ def build_pytest_command(args):
         cmd.append("tests/")
     return cmd
 
+
 def setup_environment(api_url):
     """Configura as variáveis de ambiente para os testes."""
     env = os.environ.copy()
     env["API_BASE_URL"] = api_url
     return env
+
 
 def report_test_results(result, start_time, end_time):
     """Exibe o relatório dos resultados dos testes."""
@@ -85,6 +88,7 @@ def report_test_results(result, start_time, end_time):
     else:
         print("❌ Alguns testes falharam")
     return result.returncode
+
 
 def run_tests(args):
     """Executar testes baseado nos argumentos fornecidos."""
@@ -132,70 +136,64 @@ Exemplos de uso:
   %(prog)s --coverage                         # Executar com relatório de cobertura
   %(prog)s --parallel                         # Executar testes em paralelo
   %(prog)s tests/test_api.py::TestAPIHealth   # Executar uma classe específica
-        """
+        """,
     )
-    
+
     parser.add_argument(
         "--api-url",
         default="http://127.0.0.1:8000",
-        help="URL base da API (default: http://127.0.0.1:8000)"
+        help="URL base da API (default: http://127.0.0.1:8000)",
     )
-    
+
     parser.add_argument(
-        "-v", "--verbose",
-        action="store_true",
-        help="Executar com saída verbosa"
+        "-v", "--verbose", action="store_true", help="Executar com saída verbosa"
     )
-    
+
     parser.add_argument(
-        "-q", "--quiet",
-        action="store_true",
-        help="Executar com saída mínima"
+        "-q", "--quiet", action="store_true", help="Executar com saída mínima"
     )
-    
+
     parser.add_argument(
-        "-m", "--markers",
+        "-m",
+        "--markers",
         action="append",
-        help="Executar apenas testes com marcadores específicos (ex: slow, integration)"
+        help="Executar apenas testes com marcadores específicos (ex: slow, integration)",
     )
-    
+
     parser.add_argument(
-        "-k", "--keywords",
+        "-k",
+        "--keywords",
         action="append",
-        help="Executar apenas testes que contenham as palavras-chave"
+        help="Executar apenas testes que contenham as palavras-chave",
     )
-    
+
     parser.add_argument(
-        "--coverage",
-        action="store_true",
-        help="Gerar relatório de cobertura de código"
+        "--coverage", action="store_true", help="Gerar relatório de cobertura de código"
     )
-    
+
     parser.add_argument(
         "--parallel",
         action="store_true",
-        help="Executar testes em paralelo (requer pytest-xdist)"
+        help="Executar testes em paralelo (requer pytest-xdist)",
     )
-    
+
     parser.add_argument(
         "--timeout",
         type=int,
         default=300,
-        help="Timeout para testes em segundos (default: 300)"
+        help="Timeout para testes em segundos (default: 300)",
     )
-    
+
     parser.add_argument(
         "--force",
         action="store_true",
-        help="Forçar execução mesmo se a API não estiver acessível"
+        help="Forçar execução mesmo se a API não estiver acessível",
     )
-    
+
     parser.add_argument(
-        "test_files",
-        nargs="*",
-        help="Arquivos ou padrões de teste específicos"
+        "test_files", nargs="*", help="Arquivos ou padrões de teste específicos"
     )
-    
+
     return parser
 
 
@@ -209,9 +207,9 @@ def main():
     """Função principal."""
     parser = create_argument_parser()
     args = parser.parse_args()
-    
+
     validate_arguments(parser, args)
-    
+
     sys.exit(run_tests(args))
 
 
