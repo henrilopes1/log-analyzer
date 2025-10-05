@@ -7,7 +7,7 @@ import os
 import json
 import yaml
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from dataclasses import dataclass, asdict
 
 
@@ -36,8 +36,8 @@ class SecurityConfig:
     secret_key: str = "your-secret-key-change-in-production"
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
-    allowed_hosts: list = None
-    cors_origins: list = None
+    allowed_hosts: Optional[List[str]] = None
+    cors_origins: Optional[List[str]] = None
 
 
 @dataclass

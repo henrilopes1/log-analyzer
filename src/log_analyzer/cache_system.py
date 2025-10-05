@@ -193,7 +193,7 @@ def cache_key(*args, **kwargs) -> str:
     return hashlib.md5(key_string.encode()).hexdigest()
 
 
-def cached(cache_instance: HybridCache, ttl: Optional[int] = None):
+def cached(cache_instance: HybridCache):
     """Decorator para cache de funções."""
     def decorator(func: Callable) -> Callable:
         @wraps(func)

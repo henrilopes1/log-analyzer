@@ -8,6 +8,7 @@ Aplicando boas práticas de programação, monitoramento e otimização.
 import io
 import json
 import logging
+import os
 import time
 import psutil
 from datetime import datetime, timezone
@@ -22,7 +23,7 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler("logs/api.log", mode="a") if "logs" else logging.NullHandler()
+        logging.FileHandler("logs/api.log", mode="a") if os.path.exists("logs") else logging.NullHandler()
     ]
 )
 logger = logging.getLogger(__name__)
