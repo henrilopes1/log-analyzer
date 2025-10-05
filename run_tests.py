@@ -45,77 +45,71 @@ def check_api_availability(url: str) -> bool:
         return False
 
 
+def build_pytest_command(args):
+    """Constrói o comando pytest baseado nos argumentos."""
+    cmd = ["python", "-m", "pytest"]
+    if args.verbose:
+        cmd.append("-v")
+    if args.quiet:
+        cmd.append("-q")
+    if args.markers:
+        for marker in args.markers:
+            cmd.extend(["-m", marker])
+    if args.keywords:
+        for keyword in args.keywords:
+            cmd.extend(["-k", keyword])
+    if args.coverage:
+        cmd.extend(["--cov=src/log_analyzer", "--cov-report=html", "--cov-report=term"])
+    if args.parallel:
+        cmd.extend(["-n", "auto"])
+    if args.timeout:
+        cmd.extend(["--timeout", str(args.timeout)])
+    if args.test_files:
+        cmd.extend(args.test_files)
+    else:
+        cmd.append("tests/")
+    return cmd
+
+def setup_environment(api_url):
+    """Configura as variáveis de ambiente para os testes."""
+    env = os.environ.copy()
+    env["API_BASE_URL"] = api_url
+    return env
+
+def report_test_results(result, start_time, end_time):
+    """Exibe o relatório dos resultados dos testes."""
+    print("=" * 60)
+    print(f"⏱️  Tempo total: {end_time - start_time:.1f}s")
+    if result.returncode == 0:
+        print("✅ Todos os testes passaram!")
+    else:
+        print("❌ Alguns testes falharam")
+    return result.returncode
+
 def run_tests(args):
     """Executar testes baseado nos argumentos fornecidos."""
     if not check_dependencies():
         return 1
-    
-    # Verificar se a API está rodando
+
     if not check_api_availability(args.api_url):
         print(f"⚠️  API não está acessível em {args.api_url}")
         print("💡 Certifique-se de que a API está rodando antes de executar os testes")
         if not args.force:
             return 1
-    
-    # Configurar variáveis de ambiente
-    env = os.environ.copy()
-    env["API_BASE_URL"] = args.api_url
-    
-    # Construir comando pytest
-    cmd = ["python", "-m", "pytest"]
-    
-    # Adicionar argumentos baseados nas opções
-    if args.verbose:
-        cmd.append("-v")
-    
-    if args.quiet:
-        cmd.append("-q")
-    
-    if args.markers:
-        for marker in args.markers:
-            cmd.extend(["-m", marker])
-    
-    if args.keywords:
-        for keyword in args.keywords:
-            cmd.extend(["-k", keyword])
-    
-    if args.coverage:
-        cmd.extend(["--cov=src/log_analyzer", "--cov-report=html", "--cov-report=term"])
-    
-    if args.parallel:
-        cmd.extend(["-n", "auto"])
-    
-    if args.timeout:
-        cmd.extend(["--timeout", str(args.timeout)])
-    
-    # Adicionar arquivos de teste específicos se fornecidos
-    if args.test_files:
-        cmd.extend(args.test_files)
-    else:
-        cmd.append("tests/")
-    
-    # Executar testes
-    print(f"🚀 Executando testes da API Log Analyzer...")
+
+    env = setup_environment(args.api_url)
+    cmd = build_pytest_command(args)
+
+    print("🚀 Executando testes da API Log Analyzer...")
     print(f"📍 URL da API: {args.api_url}")
     print(f"⚡ Comando: {' '.join(cmd)}")
     print("=" * 60)
-    
+
     start_time = time.time()
-    
     try:
         result = subprocess.run(cmd, env=env)
         end_time = time.time()
-        
-        print("=" * 60)
-        print(f"⏱️  Tempo total: {end_time - start_time:.1f}s")
-        
-        if result.returncode == 0:
-            print("✅ Todos os testes passaram!")
-        else:
-            print("❌ Alguns testes falharam")
-        
-        return result.returncode
-        
+        return report_test_results(result, start_time, end_time)
     except KeyboardInterrupt:
         print("\n⏹️  Testes interrompidos pelo usuário")
         return 130
@@ -124,8 +118,8 @@ def run_tests(args):
         return 1
 
 
-def main():
-    """Função principal."""
+def create_argument_parser():
+    """Cria e configura o parser de argumentos."""
     parser = argparse.ArgumentParser(
         description="Executar testes da API Log Analyzer",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -202,11 +196,21 @@ Exemplos de uso:
         help="Arquivos ou padrões de teste específicos"
     )
     
-    args = parser.parse_args()
-    
-    # Validar argumentos
+    return parser
+
+
+def validate_arguments(parser, args):
+    """Valida os argumentos fornecidos."""
     if args.verbose and args.quiet:
         parser.error("--verbose e --quiet são mutuamente exclusivos")
+
+
+def main():
+    """Função principal."""
+    parser = create_argument_parser()
+    args = parser.parse_args()
+    
+    validate_arguments(parser, args)
     
     sys.exit(run_tests(args))
 

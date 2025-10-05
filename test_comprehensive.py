@@ -65,11 +65,11 @@ def test_core_functionality():
         analyzer.data = test_data
         
         # Teste análise de força bruta
-        brute_force_results = analyzer.analyze_brute_force()
+        analyzer.analyze_brute_force()
         print("✅ Análise de força bruta executada")
         
         # Teste geração de estatísticas
-        stats = analyzer.generate_statistics()
+        analyzer.generate_statistics()
         print("✅ Geração de estatísticas")
         
         return True
@@ -113,7 +113,7 @@ def test_api_startup():
 def test_build_package():
     """Testa build do pacote"""
     print("\n🧪 TESTE 5: Build do Pacote")
-    success, output = run_command(
+    success, _ = run_command(
         "python -m build", 
         "Build do pacote Python"
     )
@@ -122,7 +122,7 @@ def test_build_package():
 def test_package_validation():
     """Testa validação do pacote"""
     print("\n🧪 TESTE 6: Validação do Pacote")
-    success, output = run_command(
+    success, _ = run_command(
         "twine check dist/*", 
         "Validação do pacote com twine"
     )
@@ -151,13 +151,13 @@ def test_security():
     print("\n🧪 TESTE 8: Verificação de Segurança")
     
     # Bandit
-    success1, _ = run_command(
+    _, _ = run_command(
         "bandit -r src/ -ll", 
         "Verificação de segurança com Bandit"
     )
     
     # Safety (ignorando vulnerabilidades conhecidas)
-    success2, _ = run_command(
+    _, _ = run_command(
         "safety check --ignore 70612", 
         "Verificação de vulnerabilidades com Safety"
     )

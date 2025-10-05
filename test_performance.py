@@ -16,6 +16,9 @@ from typing import Dict, List, Any
 import tempfile
 import json
 
+# Gerador NumPy para reproducibilidade e melhores práticas
+rng = np.random.default_rng(seed=42)
+
 # Adicionar src ao path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
@@ -85,8 +88,8 @@ def generate_test_data(num_rows: int) -> pd.DataFrame:
     source_ips = []
     
     for _ in range(num_rows):
-        base = np.random.choice(base_ips)
-        suffix = np.random.randint(1, 255)
+        base = rng.choice(base_ips)
+        suffix = rng.integers(1, 255)
         source_ips.append(f"{base}{suffix}")
     
     # Gerar timestamps
@@ -96,11 +99,11 @@ def generate_test_data(num_rows: int) -> pd.DataFrame:
     data = {
         'timestamp': timestamps,
         'source_ip': source_ips,
-        'destination_ip': np.random.choice(['8.8.8.8', '1.1.1.1', '208.67.222.222'], num_rows),
-        'action': np.random.choice(['allow', 'block', 'drop'], num_rows),
-        'status_code': np.random.choice([200, 403, 404, 500], num_rows),
-        'bytes_transferred': np.random.randint(100, 10000, num_rows),
-        'user_agent': np.random.choice([
+        'destination_ip': rng.choice(['8.8.8.8', '1.1.1.1', '208.67.222.222'], num_rows),
+        'action': rng.choice(['allow', 'block', 'drop'], num_rows),
+        'status_code': rng.choice([200, 403, 404, 500], num_rows),
+        'bytes_transferred': rng.integers(100, 10000, num_rows),
+        'user_agent': rng.choice([
             'Mozilla/5.0', 'curl/7.68.0', 'wget/1.20.3', 'Python-requests'
         ], num_rows)
     }
@@ -129,13 +132,13 @@ def test_core_performance(profiler: PerformanceProfiler):
         
         # Teste de análise de força bruta
         start = time.time()
-        brute_force_results = analyzer.analyze_brute_force()
+        _ = analyzer.analyze_brute_force()
         bf_time = time.time() - start
         profiler.record_metric(f'brute_force_{size}', bf_time)
         
         # Teste de estatísticas
         start = time.time()
-        stats = analyzer.generate_statistics()
+        _ = analyzer.generate_statistics()
         stats_time = time.time() - start
         profiler.record_metric(f'statistics_{size}', stats_time)
         
@@ -153,7 +156,7 @@ def test_geographic_performance(profiler: PerformanceProfiler):
     # Teste individual
     for ip in test_ips:
         start = time.time()
-        location = geo_analyzer.get_ip_location(ip)
+        _ = geo_analyzer.get_ip_location(ip)
         duration = time.time() - start
         profiler.record_metric(f'geo_single_{ip}', duration)
         print(f"    ✅ {ip}: {duration*1000:.1f}ms")
@@ -340,7 +343,7 @@ def generate_performance_report(profiler: PerformanceProfiler) -> str:
         report += f"    • Mínimo: {min(durations):.1f}ms\n\n"
     
     # Benchmarks de referência
-    report += f"""
+    report += """
 🏆 BENCHMARKS DE REFERÊNCIA:
   • Análise 10k registros: < 500ms ✅
   • Análise 50k registros: < 2000ms ✅

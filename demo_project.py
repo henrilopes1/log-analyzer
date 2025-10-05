@@ -137,75 +137,76 @@ def demo_geographic_analysis():
         print(f"❌ Erro na análise geográfica: {e}")
         return False
 
+def _api_get_request(url, description, success_callback=None):
+    """Helper for GET requests to API endpoints."""
+    try:
+        response = requests.get(url, timeout=5)
+        if response.status_code == 200:
+            if success_callback:
+                success_callback(response)
+            return True
+        else:
+            print(f"⚠️  {description} respondeu com status {response.status_code}")
+            return False
+    except requests.exceptions.RequestException as e:
+        print(f"❌ {description} não está acessível: {e}")
+        return False
+
+def _print_health(response):
+    health_data = response.json()
+    print(f"   ✅ Status: {health_data.get('status', 'N/A')}")
+    print(f"   🔧 Versão: {health_data.get('version', 'N/A')}")
+    components = health_data.get('components', {})
+    for component, status in components.items():
+        icon = "✅" if status == "available" else "❌"
+        print(f"   {icon} {component}: {status}")
+
+def _print_api_info(response):
+    info_data = response.json()
+    print(f"   📝 Nome: {info_data.get('name', 'N/A')}")
+    print(f"   📊 Versão: {info_data.get('version', 'N/A')}")
+    endpoints = info_data.get('endpoints', {})
+    print("   🔗 Endpoints disponíveis:")
+    for endpoint, description in endpoints.items():
+        print(f"      • {endpoint}: {description}")
+
+def _print_metrics(response):
+    metrics_data = response.json()
+    metrics = metrics_data.get('metrics', {})
+    print(f"   ⏱️  Uptime: {metrics.get('uptime_seconds', 0):.1f}s")
+    print(f"   📊 Requisições: {metrics.get('request_count', 0)}")
+    print(f"   🚀 Tempo médio resposta: {metrics.get('avg_response_time_ms', 0):.1f}ms")
+
 def demo_api_functionality():
     """Demonstra funcionalidades da API."""
     print_section("REST API - Endpoints e Funcionalidades")
-    
     base_url = "http://127.0.0.1:8000"
-    
+
     # Verificar se API está rodando
-    try:
-        response = requests.get(f"{base_url}/", timeout=5)
-        if response.status_code == 200:
-            print("✅ API está rodando e respondendo")
-            data = response.json()
-            print(f"   📊 Status: {data.get('status', 'N/A')}")
-            print(f"   🕐 Timestamp: {data.get('timestamp', 'N/A')}")
-        else:
-            print(f"⚠️  API respondeu com status {response.status_code}")
-            return False
-    except requests.exceptions.RequestException as e:
-        print(f"❌ API não está acessível: {e}")
+    def print_root(response):
+        print("✅ API está rodando e respondendo")
+        data = response.json()
+        print(f"   📊 Status: {data.get('status', 'N/A')}")
+        print(f"   🕐 Timestamp: {data.get('timestamp', 'N/A')}")
+
+    if not _api_get_request(f"{base_url}/", "API raiz", print_root):
         print("   💡 Certifique-se de que a API está rodando em http://127.0.0.1:8000")
         return False
-    
-    # Teste do health check
-    try:
-        print("\n🏥 Testando health check...")
-        response = requests.get(f"{base_url}/health", timeout=5)
+
+    print("\n🏥 Testando health check...")
+    _api_get_request(f"{base_url}/health", "Health check", _print_health)
+
+    print("\n📋 Obtendo informações da API...")
+    _api_get_request(f"{base_url}/api-info", "API info", _print_api_info)
+
+    print("\n📈 Verificando métricas...")
+    def metrics_callback(response):
         if response.status_code == 200:
-            health_data = response.json()
-            print(f"   ✅ Status: {health_data.get('status', 'N/A')}")
-            print(f"   🔧 Versão: {health_data.get('version', 'N/A')}")
-            
-            components = health_data.get('components', {})
-            for component, status in components.items():
-                icon = "✅" if status == "available" else "❌"
-                print(f"   {icon} {component}: {status}")
-    except Exception as e:
-        print(f"   ❌ Erro no health check: {e}")
-    
-    # Teste do endpoint de informações
-    try:
-        print("\n📋 Obtendo informações da API...")
-        response = requests.get(f"{base_url}/api-info", timeout=5)
-        if response.status_code == 200:
-            info_data = response.json()
-            print(f"   📝 Nome: {info_data.get('name', 'N/A')}")
-            print(f"   📊 Versão: {info_data.get('version', 'N/A')}")
-            
-            endpoints = info_data.get('endpoints', {})
-            print("   🔗 Endpoints disponíveis:")
-            for endpoint, description in endpoints.items():
-                print(f"      • {endpoint}: {description}")
-    except Exception as e:
-        print(f"   ❌ Erro ao obter informações: {e}")
-    
-    # Teste do endpoint de métricas (se disponível)
-    try:
-        print("\n📈 Verificando métricas...")
-        response = requests.get(f"{base_url}/metrics", timeout=5)
-        if response.status_code == 200:
-            metrics_data = response.json()
-            metrics = metrics_data.get('metrics', {})
-            print(f"   ⏱️  Uptime: {metrics.get('uptime_seconds', 0):.1f}s")
-            print(f"   📊 Requisições: {metrics.get('request_count', 0)}")
-            print(f"   🚀 Tempo médio resposta: {metrics.get('avg_response_time_ms', 0):.1f}ms")
+            _print_metrics(response)
         else:
             print(f"   ⚠️  Métricas não disponíveis (status {response.status_code})")
-    except Exception as e:
-        print(f"   ℹ️  Métricas não disponíveis: {e}")
-    
+    _api_get_request(f"{base_url}/metrics", "Métricas", metrics_callback)
+
     return True
 
 def demo_file_processing():

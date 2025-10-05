@@ -191,7 +191,7 @@ class SimpleAPITester:
         total = self.passed + self.failed
         success_rate = (self.passed / total * 100) if total > 0 else 0
         
-        print(f"\n📊 RESUMO:")
+        print("\n📊 RESUMO:")
         print(f"   Total: {total}")
         print(f"   ✅ Passou: {self.passed}")
         print(f"   ❌ Falhou: {self.failed}")
@@ -234,7 +234,7 @@ def main():
     success = tester.run_all_tests()
     
     # Instruções adicionais
-    print(f"\n📝 COMO USAR OS TESTES PYTEST:")
+    print("\n📝 COMO USAR OS TESTES PYTEST:")
     print("   pip install pytest requests")
     print("   python -m pytest tests/test_api.py -v")
     print("   python run_tests.py -v")

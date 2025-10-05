@@ -52,9 +52,9 @@ class AppConfig:
     workers: int = 4
     
     # Sub-configurações
-    database: DatabaseConfig = None
-    redis: RedisConfig = None
-    security: SecurityConfig = None
+    database: Optional[DatabaseConfig] = None
+    redis: Optional[RedisConfig] = None
+    security: Optional[SecurityConfig] = None
     
     def __post_init__(self):
         if self.database is None:
