@@ -112,12 +112,12 @@ def demo_geographic_analysis():
                     city = location.get('city', 'Desconhecida')
                     print(f"   📍 Localização: {city}, {country}")
                 else:
-                    print(f"   ⚠️  Localização não encontrada")
+                    print("   ⚠️  Localização não encontrada")
             except Exception as e:
                 print(f"   ❌ Erro ao obter localização: {e}")
         
         # Análise em lote
-        print(f"\n🌐 Executando análise geográfica em lote...")
+        print("\n🌐 Executando análise geográfica em lote...")
         try:
             results = geo.analyze_ips(test_ips[:2])  # Limitando para não sobrecarregar
             print(f"   📊 Resultados: {len(results)} localizações processadas")
@@ -185,7 +185,7 @@ def demo_api_functionality():
             print(f"   📊 Versão: {info_data.get('version', 'N/A')}")
             
             endpoints = info_data.get('endpoints', {})
-            print(f"   🔗 Endpoints disponíveis:")
+            print("   🔗 Endpoints disponíveis:")
             for endpoint, description in endpoints.items():
                 print(f"      • {endpoint}: {description}")
     except Exception as e:
@@ -243,7 +243,7 @@ def demo_file_processing():
                 if response.status_code == 200:
                     result = response.json()
                     summary = result.get('summary', {})
-                    print(f"   ✅ Upload bem-sucedido!")
+                    print("   ✅ Upload bem-sucedido!")
                     print(f"   📊 Arquivos processados: {summary.get('files_processed', 0)}")
                     print(f"   📈 Total de eventos: {summary.get('total_events', 0)}")
                     print(f"   ⏱️  Tempo de processamento: {summary.get('processing_time_seconds', 0):.2f}s")
@@ -253,7 +253,7 @@ def demo_file_processing():
                     if brute_force:
                         print(f"   ⚠️  Ataques de força bruta detectados: {len(brute_force)}")
                     else:
-                        print(f"   ✅ Nenhum ataque de força bruta detectado")
+                        print("   ✅ Nenhum ataque de força bruta detectado")
                         
                 else:
                     print(f"   ❌ Upload falhou com status {response.status_code}")
@@ -266,8 +266,9 @@ def demo_file_processing():
             # Limpar arquivo temporário
             try:
                 os.unlink(temp_file)
-                print(f"   🧹 Arquivo temporário removido")
-            except:
+                print("   🧹 Arquivo temporário removido")
+            except OSError:
+                # Ignora erros de remoção de arquivo
                 pass
         
         return True
@@ -306,7 +307,7 @@ def demo_cache_system():
         
         # Mostrar estatísticas
         stats = cache.stats()
-        print(f"\n📊 Estatísticas do cache:")
+        print("\n📊 Estatísticas do cache:")
         print(f"   📈 Hit ratio: {stats.get('hit_ratio', 0):.2%}")
         print(f"   💾 Tamanho atual: {stats.get('hit_count', 0) + stats.get('miss_count', 0)} operações")
         
@@ -349,15 +350,8 @@ def demo_performance_summary():
         print(f"❌ Erro ao ler performance: {e}")
         return False
 
-def main():
-    """Executa demonstração completa."""
-    print_header("LOG ANALYZER - DEMONSTRAÇÃO COMPLETA")
-    print("🎯 Demonstrando todas as funcionalidades do sistema")
-    print("⏱️  Tempo estimado: 2-3 minutos")
-    
-    results = []
-    
-    # Executar todas as demonstrações
+def run_demos():
+    """Executa todas as demonstrações e retorna os resultados."""
     demos = [
         ("Core Functionality", demo_core_functionality),
         ("Geographic Analysis", demo_geographic_analysis),
@@ -367,6 +361,7 @@ def main():
         ("Performance Summary", demo_performance_summary),
     ]
     
+    results = []
     for demo_name, demo_func in demos:
         try:
             success = demo_func()
@@ -375,7 +370,10 @@ def main():
             print(f"❌ Erro inesperado em {demo_name}: {e}")
             results.append((demo_name, False))
     
-    # Resumo final
+    return results
+
+def print_summary(results):
+    """Imprime o resumo dos resultados da demonstração."""
     print_header("RESUMO DA DEMONSTRAÇÃO")
     
     passed = 0
@@ -387,9 +385,12 @@ def main():
     
     total = len(results)
     success_rate = (passed / total) * 100
-    
     print(f"\n📊 Status Geral: {passed}/{total} módulos funcionando ({success_rate:.0f}%)")
     
+    return success_rate
+
+def print_final_status(success_rate):
+    """Imprime o status final baseado na taxa de sucesso."""
     if success_rate >= 80:
         print("🎉 SISTEMA FUNCIONANDO PERFEITAMENTE!")
         print("\n🚀 PRÓXIMOS PASSOS:")
@@ -402,6 +403,19 @@ def main():
     else:
         print("🔧 SISTEMA PRECISA DE CONFIGURAÇÃO")
         print("💡 Verifique dependências e configurações")
+
+def main():
+    """Executa demonstração completa."""
+    print_header("LOG ANALYZER - DEMONSTRAÇÃO COMPLETA")
+    print("🎯 Demonstrando todas as funcionalidades do sistema")
+    print("⏱️  Tempo estimado: 2-3 minutos")
+    
+    # Executar todas as demonstrações
+    results = run_demos()
+    
+    # Imprimir resumo e status final
+    success_rate = print_summary(results)
+    print_final_status(success_rate)
     
     return 0 if success_rate >= 60 else 1
 
