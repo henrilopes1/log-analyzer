@@ -9,21 +9,22 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app
 
-# Instalar dependências do sistema necessárias
+# Instalar dependências do sistema, criar usuário e instalar dependências Python em uma única camada
 RUN apt-get update && apt-get install -y \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home --shell /bin/bash app
 
 # Copiar e instalar dependências Python
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt \
+    && rm requirements.txt
 
 # Copiar apenas o código fonte necessário para a API
 COPY src/ ./src/
 
-# Criar usuário não-root para segurança
-RUN useradd --create-home --shell /bin/bash app \
-    && chown -R app:app /app
+# Mudar propriedade dos arquivos e alternar para usuário não-root
+RUN chown -R app:app /app
 USER app
 
 # Expor porta da API
