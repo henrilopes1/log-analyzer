@@ -1,61 +1,103 @@
-# Log Analyzer
+# Log Analyzer - .gitignore
 
-*.log
+# ===============================================
+# PYTHON
+# ===============================================
 *.pyc
-__pycache__/
 *.pyo
 *.pyd
+__pycache__/
 .Python
+*.so
+
+# ===============================================
+# AMBIENTES VIRTUAIS
+# ===============================================
 env/
 venv/
 .venv/
+ENV/
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Ambiente virtual
-env/
-ENV/
-
-# IDEs
+# ===============================================
+# IDES E EDITORES
+# ===============================================
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+.*.swp
 
-# OS
+# ===============================================
+# SISTEMA OPERACIONAL
+# ===============================================
 .DS_Store
 Thumbs.db
 
-# Arquivos temporários
+# ===============================================
+# LOGS E ARQUIVOS TEMPORÁRIOS
+# ===============================================
+*.log
 *.tmp
 *.temp
-*~
+logs/
 
-# Exports
+# ===============================================
+# TESTES E COBERTURA
+# ===============================================
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+# ===============================================
+# RELATÓRIOS E ANÁLISES
+# ===============================================
+performance_report_*.txt
+*.benchmark
+*.profile
+.sonarlint/
+
+# ===============================================
+# ARQUIVOS DE EXPORTAÇÃO
+# ===============================================
 exports/*.csv
 exports/*.json
 exports/*.xlsx
 
-# Cache de análise geográfica
+# ===============================================
+# CACHE E CONFIGURAÇÕES LOCAIS
+# ===============================================
 geo_cache.json
-
-# Configurações locais
 config/local_config.json
 config/user_config.json
 
-# Logs da aplicação
-*.log
-logs/
-
-# Arquivos de teste
+# ===============================================
+# ARQUIVOS DE TESTE
+# ===============================================
 test_*.csv
 test_*.json
 sample_*.csv
 sample_*.json
 
-# Backup files
+# ===============================================
+# BACKUP E ARQUIVOS TEMPORÁRIOS
+# ===============================================
 *.bak
 *.backup
 
-# Legacy files (manter para compatibilidade)
-# legacy/ - manter pasta legacy no versionamento
+# ===============================================
+# BUILD E DISTRIBUIÇÃO
+# ===============================================
+build/
+dist/
+*.egg-info/
+
+# ===============================================
+# ARQUIVOS DE DEBUG
+# ===============================================
+debug.log
+*.debug

@@ -69,19 +69,19 @@ pytest tests/ -v
 #### 2. 🔧 Usando o Script Personalizado
 ```bash
 # Executar todos os testes
-python run_tests.py
+python scripts/run_tests.py
 
 # Executar com saída verbosa
-python run_tests.py -v
+python scripts/run_tests.py -v
 
 # Executar apenas testes de integração
-python run_tests.py -m integration
+python scripts/run_tests.py -m integration
 
 # Executar testes que contenham "health"
-python run_tests.py -k "health"
+python scripts/run_tests.py -k "health"
 
 # Executar com relatório de cobertura
-python run_tests.py --coverage
+python scripts/run_tests.py --coverage
 ```
 
 #### 3. 🎨 Execução Direta do Arquivo
@@ -138,7 +138,7 @@ pip install pytest-cov
 pytest --cov=src/log_analyzer --cov-report=html --cov-report=term
 
 # Ou usar o script personalizado
-python run_tests.py --coverage
+python scripts/run_tests.py --coverage
 ```
 
 ## 🔄 Execução Paralela
@@ -153,7 +153,7 @@ pip install pytest-xdist
 pytest -n auto
 
 # Ou usar o script personalizado
-python run_tests.py --parallel
+python scripts/run_tests.py --parallel
 ```
 
 ## 🐛 Solução de Problemas
@@ -218,7 +218,7 @@ Para validar completamente a API:
 
 ```bash
 # Execução completa com relatórios
-python run_tests.py --coverage --verbose
+python scripts/run_tests.py --coverage --verbose
 
 # Verificar se todos os cenários passam
 pytest tests/ -v --tb=short
