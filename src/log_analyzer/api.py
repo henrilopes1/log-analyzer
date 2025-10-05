@@ -38,11 +38,11 @@ try:
     from fastapi import FastAPI, File, HTTPException, UploadFile, Request
     from fastapi.responses import JSONResponse
     from fastapi.middleware.cors import CORSMiddleware
-    from fastapi.middleware.base import BaseHTTPMiddleware
+    from starlette.middleware.base import BaseHTTPMiddleware
 
     FASTAPI_AVAILABLE = True
-except ImportError:
-    logger.warning("FastAPI não disponível")
+except ImportError as e:
+    logger.warning(f"FastAPI não disponível: {e}")
     FASTAPI_AVAILABLE = False
 
 try:

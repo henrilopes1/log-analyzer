@@ -85,14 +85,3 @@ def pytest_collection_modifyitems(config, items):
         # Marcar testes de API como integração
         if item.cls and "API" in item.cls.__name__:
             item.add_marker(pytest.mark.integration)
-
-
-# Configurações para execução paralela (se pytest-xdist estiver instalado)
-def pytest_xdist_worker_id(worker_id):
-    """Configuração para workers do pytest-xdist."""
-    if worker_id is not None:
-        # Usar porta diferente para cada worker
-        base_port = 8000
-        worker_num = int(worker_id.replace("gw", ""))
-        return base_port + worker_num
-    return 8000
