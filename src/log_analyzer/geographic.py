@@ -100,7 +100,7 @@ class GeographicAnalyzer:
             self.console.print(
                 f"[yellow]⚠️ Timeout na consulta de geolocalização para {ip_address} após {self.timeout}s[/yellow]"
             )
-        except requests.exceptions.ConnectionError as e:
+        except requests.exceptions.ConnectionError:
             self.console.print(
                 f"[red]❌ Erro de conexão na geolocalização de {ip_address}: Não foi possível conectar à API de geolocalização[/red]"
             )
@@ -112,7 +112,7 @@ class GeographicAnalyzer:
             self.console.print(
                 f"[yellow]⚠️ Erro de requisição na geolocalização de {ip_address}: {type(e).__name__} - {str(e)}[/yellow]"
             )
-        except json.JSONDecodeError as e:
+        except json.JSONDecodeError:
             self.console.print(
                 f"[red]❌ Erro ao decodificar resposta JSON para {ip_address}: Resposta inválida da API de geolocalização[/red]"
             )
