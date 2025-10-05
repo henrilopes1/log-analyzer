@@ -2,6 +2,7 @@
 Módulo de análise geográfica do Log Analyzer
 """
 
+import json
 import time
 from collections import Counter
 from typing import Any, Dict, List, Optional, Set
@@ -97,15 +98,27 @@ class GeographicAnalyzer:
 
         except requests.exceptions.Timeout:
             self.console.print(
-                f"[yellow]⚠️ Timeout na consulta de {ip_address}[/yellow]"
+                f"[yellow]⚠️ Timeout na consulta de geolocalização para {ip_address} após {self.timeout}s[/yellow]"
+            )
+        except requests.exceptions.ConnectionError as e:
+            self.console.print(
+                f"[red]❌ Erro de conexão na geolocalização de {ip_address}: Não foi possível conectar à API de geolocalização[/red]"
+            )
+        except requests.exceptions.HTTPError as e:
+            self.console.print(
+                f"[red]❌ Erro HTTP na geolocalização de {ip_address}: {e.response.status_code} - {e.response.reason}[/red]"
             )
         except requests.exceptions.RequestException as e:
             self.console.print(
-                f"[yellow]⚠️ Erro na requisição para {ip_address}: {e}[/yellow]"
+                f"[yellow]⚠️ Erro de requisição na geolocalização de {ip_address}: {type(e).__name__} - {str(e)}[/yellow]"
+            )
+        except json.JSONDecodeError as e:
+            self.console.print(
+                f"[red]❌ Erro ao decodificar resposta JSON para {ip_address}: Resposta inválida da API de geolocalização[/red]"
             )
         except Exception as e:
             self.console.print(
-                f"[red]❌ Erro inesperado na geolocalização de {ip_address}: {e}[/red]"
+                f"[red]❌ Erro inesperado na geolocalização de {ip_address}: {type(e).__name__} - {str(e)}[/red]"
             )
 
         return None
