@@ -3,12 +3,12 @@ Sistema de Cache Avançado para o Log Analyzer
 Implementa cache em memória e Redis para otimização de performance
 """
 
-import time
-import json
 import hashlib
-from typing import Any, Optional, Dict, Callable
-from functools import wraps
+import json
+import time
 from collections import OrderedDict
+from functools import wraps
+from typing import Any, Callable, Dict, Optional
 
 
 class MemoryCache:

@@ -6,6 +6,7 @@ para todos os testes da suíte de testes.
 """
 
 import os
+
 import pytest
 import requests
 from requests.exceptions import RequestException
