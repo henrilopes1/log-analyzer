@@ -257,7 +257,7 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 **Henri Lopes**
 - GitHub: [@henrilopes1](https://github.com/henrilopes1)
-- LinkedIn: [Henri Lopes](https://linkedin.com/in/henri-lopes)
+- LinkedIn: [Henri Lopes](https://www.linkedin.com/in/henri-de-oliveira-lopes)
 
 ---
 
