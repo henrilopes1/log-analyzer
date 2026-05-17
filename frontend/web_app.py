@@ -17,6 +17,42 @@ st.set_page_config(
 # Constantes da API
 API_URL = "http://127.0.0.1:8000"
 ANALYZE_ENDPOINT = f"{API_URL}/analyze/"
+TOKEN_ENDPOINT = f"{API_URL}/token"
+
+def render_login_page():
+    """Renderiza uma página de login bonita e centralizada."""
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        # Container com bordas e sombra simulada para dar um aspecto de "card"
+        with st.container(border=True):
+            st.markdown("<h2 style='text-align: center;'>🛡️ Secure Log Analyzer</h2>", unsafe_allow_html=True)
+            st.markdown("<p style='text-align: center; color: gray;'>Central de Inteligência Cibernética</p>", unsafe_allow_html=True)
+            st.markdown("<hr>", unsafe_allow_html=True)
+            
+            with st.form("login_form"):
+                username = st.text_input("👤 Nome de Usuário", placeholder="Ex: admin")
+                password = st.text_input("🔑 Senha", type="password", placeholder="Digite sua senha")
+                
+                submitted = st.form_submit_button("Entrar no Sistema", type="primary", use_container_width=True)
+                
+                if submitted:
+                    if not username or not password:
+                        st.warning("⚠️ Preencha usuário e senha!")
+                    else:
+                        with st.spinner("Autenticando na API..."):
+                            try:
+                                response = requests.post(TOKEN_ENDPOINT, data={"username": username, "password": password})
+                                if response.status_code == 200:
+                                    st.session_state["token"] = response.json().get("access_token")
+                                    st.success("✅ Acesso Liberado!")
+                                    st.rerun()
+                                else:
+                                    st.error("❌ Credenciais inválidas.")
+                            except Exception as e:
+                                st.error(f"🔌 Erro de conexão com o servidor. A API está rodando?")
 
 def analyze_logs(firewall_file, auth_file):
     """
@@ -38,13 +74,20 @@ def analyze_logs(firewall_file, auth_file):
         st.warning("Por favor, faça upload de pelo menos um arquivo de log.")
         return None
 
+    headers = {}
+    if "token" in st.session_state:
+        headers["Authorization"] = f"Bearer {st.session_state['token']}"
+
     try:
         # st.spinner exibe uma animação enquanto a requisição à API é feita
         with st.spinner("Enviando dados para análise na API..."):
-            response = requests.post(ANALYZE_ENDPOINT, files=files, timeout=30)
+            response = requests.post(ANALYZE_ENDPOINT, files=files, headers=headers, timeout=30)
             
         if response.status_code == 200:
             return response.json()
+        elif response.status_code == 401:
+            st.error("Erro de Autenticação. Verifique seu login.")
+            return None
         else:
             st.error(f"Erro na API (Status Code: {response.status_code}): {response.text}")
             return None
@@ -130,12 +173,25 @@ def main():
     """
     Função principal que monta a interface.
     """
-    # Título principal da página
-    st.title("🛡️ Log Analyzer Cyber - Dashboard")
-    st.markdown("Bem-vindo ao dashboard interativo. Faça upload dos seus arquivos de log (CSV ou JSON) para análise de segurança cibernética.")
+    # Verifica o estado da sessão antes de renderizar qualquer coisa da aplicação principal
+    if "token" not in st.session_state:
+        render_login_page()
+        st.stop()
+        
+    # ==========================================
+    # ÁREA LOGADA (DASHBOARD)
+    # ==========================================
+    # Título principal da página logada
+    st.title("🛡️ Log Analyzer Cyber")
+    st.markdown("Bem-vindo ao dashboard interativo. Utilize as ferramentas ao lado para subir seus dados.")
     
     # Cria uma barra lateral
     with st.sidebar:
+        st.header("👤 Perfil")
+        st.success("Logado com sucesso.")
+        st.button("Sair (Logout)", on_click=lambda: st.session_state.pop("token") and st.rerun(), type="secondary", use_container_width=True)
+        
+        st.markdown("---")
         st.header("📁 Upload de Arquivos")
         st.markdown("Insira seus relatórios exportados abaixo (tamanho máx: 100MB).")
         
@@ -143,7 +199,7 @@ def main():
         firewall_file = st.file_uploader("Upload Firewall Log", type=['csv', 'json'])
         auth_file = st.file_uploader("Upload Auth Log", type=['csv', 'json'])
         
-        analyze_button = st.button("🚀 Analisar Logs", use_container_width=True)
+        analyze_button = st.button("🚀 Analisar Logs", type="primary", use_container_width=True)
         
         st.markdown("---")
         st.markdown("💡 *Dica: Você pode testar subindo os arquivos que estão na pasta `data/` do projeto.*")
