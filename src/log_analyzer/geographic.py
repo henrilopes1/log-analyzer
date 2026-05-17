@@ -394,8 +394,8 @@ class GeographicAnalyzer:
                         "ip": ip,
                         "country": location_info.get("country", "Desconhecido"),
                         "city": location_info.get("city", "Desconhecido"),
-                        "latitude": location_info.get("lat", 0),
-                        "longitude": location_info.get("lon", 0),
+                        "latitude": location_info.get("latitude", 0.0),
+                        "longitude": location_info.get("longitude", 0.0),
                         "risk_level": (
                             "high"
                             if location_info.get("country") in self.high_risk_countries
