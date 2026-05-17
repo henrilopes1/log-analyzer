@@ -1,25 +1,26 @@
 # 🛡️ Log Analyzer - Cybersecurity Tool
 
-Uma ferramenta profissional de análise de logs de segurança desenvolvida em Python, contendo um **Core Analítico**, uma **API REST FastAPI** e um **Dashboard Web interativo (Streamlit)** para facilitar a leitura. O projeto é focado em detectar ameaças cibernéticas locais, realizar curadoria geográfica de IPs e gerar insights visuais em painéis de análise rápida.
+Uma ferramenta profissional de análise de logs de segurança desenvolvida em Python, contendo um **Core Analítico**, uma **API REST FastAPI protegida com JWT** e um **Dashboard Web interativo (Streamlit)** moderno e seguro para facilitar a leitura e análise de ameaças. O projeto é focado em detectar ataques cibernéticos locais, realizar curadoria geográfica de IPs e gerar insights visuais rápidos em um painel restrito.
 
 ## 🎯 Sobre o Projeto
 
-O **Log Analyzer** é uma solução para análise de segurança cibernética que processa logs de firewall e autenticação em busca de comportamentos suspeitos, exibindo os resultados tanto para sistemas automatizados (via API) quanto para humanos (através de uma bela interface gráfica).
+O **Log Analyzer** é uma solução para análise de segurança cibernética que processa logs de firewall e autenticação em busca de comportamentos suspeitos. Agora conta com um **fluxo de login restrito via JWT**, garantindo que apenas usuários autorizados consigam exportar relatórios para análise da API.
 
 ### 🔍 Principais Funcionalidades
 
+- **🔐 Autenticação OAuth2 / JWT**: O backend é inteiramente protegido por tokens de sessão.
 - **🚨 Detecção de Ameaças**: Identifica acessos de força bruta e comportamentos de ataque.
-- **🌍 Mapeamento Geográfico**: Integração de chaves visuais com mapa-múndi e geolocalização dos IPs invasores.
+- **🌍 Mapeamento Geográfico**: Integração gráfica com mapa-múndi e geolocalização dos IPs evasivos.
 - **📊 Inteligência de Risco**: Sistema de classificação baseada no histórico de atividade local (Alto/Médio/Baixo).
-- **🌐 Pipeline REST**: Um backend em FastAPI pronto para receber cargas em formatos `.json` ou `.csv`.
-- **💻 App Web (Frontend)**: Interface limpa rodando sobre o *Streamlit* para upload simultâneo e construção em tempo real dos dashboards.
-- **⚙️ Limpo e Desacoplado**: Repositório focado com arquivos independentes e código desacoplado.
+- **🌐 Pipeline REST**: Um backend em FastAPI pronto para receber cargas (`.csv`, `.json`).
+- **💻 App Web Securizado**: Uma central de *Login* desenvolvida no Streamlit; os painéis só carregam mediante à verificação bem-sucedida das chaves e repassam o Bearer Token por baixo dos panos.
+- **⚙️ Limpo e Desacoplado**: Repositório focado com arquivos independentes e arquitetura isolada.
 
 ---
 
 ## ⚡ Instalação Rápida
 
-Recomenda-se utilizar um ambiente virtual (`.venv`) para rodar e testar esta ferramenta na sua máquina local:
+Recomenda-se utilizar um ambiente virtual (`.venv`) para rodar os pacotes de criptografia e web localmente:
 
 ```bash
 # 1. Clonar o repositório
@@ -31,69 +32,68 @@ python -m venv .venv
 
 # 3. Ativar o ambiente
 source .venv/Scripts/activate  # Linux/Git Bash/Mac
-.venv\Scripts\activate         # Windows (CMD)
+.venv\Scripts\activate         # Windows (CMD / PowerShell)
 
-# 4. Instalar as dependências do Back e Front
+# 4. Instalar as dependências Core, Segurança (bcrypt/jwt) e Front (streamlit)
 pip install -r requirements.txt
-pip install streamlit requests pandas
+pip install PyJWT passlib "bcrypt==4.0.1" python-multipart streamlit requests pandas
 ```
 
 ---
 
 ## 💡 Como Usar o Projeto
 
-Para visualizar a ferramenta em seu potencial completo, você deve ligar o Backend e, em seguida, o Frontend.
+Para visualizar a ferramenta por completo, será preciso iniciar o **Backend (FastAPI)** para orquestrar as senhas e cálculos lógicos, e em seguida inicializar o **Frontend (Streamlit)** para renderizar a interface de manipulação.
 
-### 1️⃣ Iniciando a API (Backend)
-No seu terminal (com o ambiente `venv` ativo):
+### 1️⃣ Iniciando a API (Backend Segura)
+No seu terminal 1 (com o ambiente `venv` ativo):
 ```bash
 python run_api.py
 ```
-A API ficará ativa em `http://127.0.0.1:8000`. Ela é quem realiza a leitura pesada dos dados CSV.
+A API ficará ativa em `http://127.0.0.1:8000`.
 
-### 2️⃣ Iniciando o Dashboard Web (Frontend)
-Abra um segundo terminal integrado, ative novamente o seu virtual environment (`.venv`) e rode o Streamlit:
+### 2️⃣ Iniciando o Dashboard Web (Interface de Login)
+Abra um **segundo terminal paralelo**, ative seu virtual environment e use:
 ```bash
-python -m streamlit run frontend/web_app.py
+python -m streamlit run frontend/web_app.py --server.port 8503
 ```
-O framework abrirá uma nova guia no seu navegador em `http://localhost:8501`. 
+*(Usamos a porta 8503 para evitar choque de portas em caches agressivos do Windows/Frontend).*
 
-### 3️⃣ Testando
-1. No menu lateral da página, arraste os arquivos de exemplo contidos na pasta `./data/` do projeto (`sample_firewall.csv` e `sample_auth.csv`).
-2. Clique no botão de enviar.
-3. Observe os contadores de ameaças, a Tabela de Alertas de Nível Alto e a Localização dos Ofensores sendo exibidos em tempo real.
+### 3️⃣ Testando o Sistema
+1. Abra no navegador: `http://localhost:8503`
+2. **Faça o Login** fornecido no banco de dados isolado da aplicação:
+   - **Usuário:** `admin`
+   - **Senha:** `senha123`
+3. Após desbloquear, expanda a barra lateral lateral ("Upload de Arquivos").
+4. Faça upload dos arquivos de teste, como `data/sample_firewall.csv` e `data/sample_auth.csv`.
+5. Acione o botão de analisar logs e observe os gráficos de ofensores geográficos.
 
 ---
 
 ## 🔧 Arquitetura do Projeto
 
-A estrutura do diretório foi limpa para priorizar o foco na regra de negócios:
-
 ```text
 log-analyzer/
 ├── data/                # Bases de dados simuladas para poder fazer os testes
-├── docs/                # Arquivos complementares de documentação
-├── examples/            # Exemplos de uso limpo (ex: test_geographic.py)
-├── frontend/            # A interface Web do dashboard (web_app.py)
-├── src/                 # Lógica de Backend (A regra de negócios do app LogAnalyzer e a API)
-├── tests/               # Testes de unidade e qualidade (via Pytest)
+├── examples/            # Exemplos de uso em Python de alto nível bruto
+├── frontend/            # A interface Web - Lógica de Login e Renderização de Maps (web_app.py)
+├── src/log_analyzer/    # Lógica de Backend (Servidor API, Middlewares, Hashers JWT)
+├── tests/               # Testes automatizados
 │
-├── CHANGELOG.md         # Histórico de alterações e features do sistema
-├── COMO_EXECUTAR.md     # Instruções em detalhes
-├── run_api.py           # O "botão de ligar" do seu Servidor FastAPI
-└── README.md            # Este arquivo principal
+├── run_api.py           # O "botão de ligar" do seu Servidor Backend FastAPI
+├── requirements.txt     # Listagem das bilbiotecas necessárias
+└── README.md            # Este arquivo
 ```
 
 ---
 
-## 📊 Endpoints Diretos da API
+## 📊 Endpoints da API
 
-Se você preferir consumir o serviço via outro app em vez do Streamlit, basta bater nestes caminhos (com a aplicação `run_api.py` ativa): 
+Se você for desenvolver uma integração via cURL, Postman ou afins:
 
-- **GET `/`** - Status da API
-- **GET `/health`** - Health check
-- **POST `/analyze/`** - Análise de logs (envio via body multipart)
-- **GET `/docs`** - Documentação interativa (Swagger UI nativo)
+- **POST `/token`** - Rota para trocar suas credenciais básicas por um Token JWT de Acesso. 
+- **POST `/analyze/`** - Análise de logs _[REQUER O TOKEN NO HEADER "Authorization: Bearer <seu_token_aqui>"]_.
+- **GET `/health`** - Checagem de disponibilidade limpa da CPU.
 
 ---
 
